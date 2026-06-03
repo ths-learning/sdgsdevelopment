@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -54,6 +55,7 @@
 </head>
 <body class="bg-slate-950 text-slate-200 h-screen overflow-hidden flex flex-col">
 
+    <!-- 登入大廳 -->
     <div id="lobby-screen" class="absolute inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] overflow-y-auto p-4">
         <div class="bg-slate-900 p-8 rounded-2xl border border-slate-700 shadow-2xl max-w-md w-full neon-border text-center my-auto">
             <h1 class="text-3xl font-black text-sky-400 mb-2 neon-text"><i class="fa-solid fa-city mr-2"></i>旅遊城市發展</h1>
@@ -72,43 +74,41 @@
                         <option value="30">史詩發展 (30分鐘)</option>
                     </select>
                 </div>
+
+                <!-- 可折疊遊戲規則說明 -->
+                <div class="border border-slate-800 rounded-lg overflow-hidden bg-slate-950/50">
+                    <button type="button" id="btn-toggle-rules" class="w-full px-4 py-2.5 text-left text-xs font-bold text-sky-400 flex justify-between items-center bg-slate-950 hover:bg-slate-900 transition-colors">
+                        <span><i class="fa-solid fa-book-open mr-2"></i>查看戰場執政指南</span>
+                        <i id="rules-icon" class="fa-solid fa-chevron-down transition-transform"></i>
+                    </button>
+                    <div id="rules-content" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out text-xs text-slate-400 px-4 space-y-2">
+                        <div class="pt-2 pb-3 space-y-2 leading-relaxed">
+                            <p><strong class="text-white">1. 三維健康指標：</strong> 建設景點會為城市提供GDP資金、ENV環境度與SOC社會和諧度。請維持環境與社會在 <span class="text-emerald-400">30%</span> 以上健康水平，否則會觸發赤字警報！</p>
+                            <p><strong class="text-white">2. 衰落與恢復期：</strong> 總分數達到「停滯階段」後，一旦 ENV 或 SOC 歸零，城市將陷入<span class="text-rose-500">衰落階段</span>（產出與分數直接減半）。必須在連續 15 秒內使環境與社會皆大於 0 才能恢復。</p>
+                            <p><strong class="text-white">3. 品牌組合加成：</strong> 收集特定景點組合（如：高品質自然、真實性文化）可額外獲得豐厚的加成收益。</p>
+                            <p><strong class="text-white">4. 國際行銷（派客）：</strong> 當擁有足夠 POP 人口時，可消耗人口往對手城市派發旅客，為您賺取其建築產出總和 30% 的佣金，同時破壞其城市環境與社會和諧。</p>
+                            <p><strong class="text-white">5. 跨國投資：</strong> 達到「鞏固階段」後，可點擊對手的空地興建跨國建築，產出的 70% 歸您，30% 歸地主。</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <button id="btn-create-room" class="mt-8 w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-[0_0_15px_rgba(2,132,199,0.5)]" disabled>
+            <button id="btn-create-room" class="mt-6 w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-[0_0_15px_rgba(2,132,199,0.5)] disabled:opacity-50" disabled>
                 <i class="fa-solid fa-plus mr-2"></i>建立對戰房間
             </button>
             
             <div class="mt-4 flex gap-2">
                 <input type="text" id="room-id-input" placeholder="輸入好友的房間ID" class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
-                <button id="btn-join-room" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm" disabled>
+                <button id="btn-join-room" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm disabled:opacity-50" disabled>
                     加入房間
                 </button>
             </div>
-            <p id="lobby-msg" class="text-xs text-rose-400 mt-4 h-4"></p>
-
-            <!-- 摺疊式遊戲規則 -->
-            <div class="mt-6 border border-slate-800 rounded-lg overflow-hidden bg-slate-950/50">
-                <button onclick="toggleRules()" class="w-full flex justify-between items-center px-4 py-3 text-sm font-bold text-slate-300 hover:bg-slate-900/50 transition-colors">
-                    <span><i class="fa-solid fa-circle-info mr-2 text-sky-400"></i>遊戲規則與玩法簡介</span>
-                    <i id="rules-icon" class="fa-solid fa-chevron-down text-xs transition-transform duration-200"></i>
-                </button>
-                <div id="rules-content" class="hidden max-h-60 overflow-y-auto px-4 pb-4 text-left text-xs text-slate-400 space-y-2.5 border-t border-slate-800 pt-3">
-                    <p class="font-bold text-sky-400 border-b border-slate-800 pb-1"><i class="fa-solid fa-star mr-1"></i>核心玩法與目標</p>
-                    <p>4名市長相互競爭。透過在自己的城市地塊上<b>建造與升級</b>旅遊景點來累積 <b>GDP (資金)</b>、<b>ENV (環境)</b>、與 <b>SOC (社會和諧)</b> 資源。每 5 秒進行一次資源產出結算，並依發展度衝刺最終排名！</p>
-                    <p class="font-bold text-emerald-400 border-b border-slate-800 pb-1"><i class="fa-solid fa-heart mr-1"></i>健康指標與「衰落」</p>
-                    <p>ENV 或 SOC 代表城市的健康度。若其中一項歸零且達到停滯階段，城市將落入「衰落階段」（每 5 秒產出減半且分數折算剩 50%）。必須<b>連續 15 秒內</b>使雙指標大於 0 方可重振旗鼓！</p>
-                    <p class="font-bold text-amber-400 border-b border-slate-800 pb-1"><i class="fa-solid fa-bolt mr-1"></i>品牌組合加成</p>
-                    <p>依要求蓋起對應的建築組合，可啟動強大的品牌增強（例如集齊特色步道、森林露營、海洋保育區，可啟動高品質自然 +15 ENV / Tick ）。</p>
-                    <p class="font-bold text-purple-400 border-b border-slate-800 pb-1"><i class="fa-solid fa-plane mr-1"></i>國際行銷 (旅客派發)</p>
-                    <p>消耗 100 POP (隨模式等比放大) 向對手派發旅客：對方獲得大量 GDP，但其 ENV 與 SOC 將降低 6 點；身為代理商的你將當場抽成 30% GDP！</p>
-                    <p class="font-bold text-blue-400 border-b border-slate-800 pb-1"><i class="fa-solid fa-earth-asia mr-1"></i>跨國投資</p>
-                    <p>進入「鞏固階段」即可解鎖跨國權利，玩家可前往別人家空地投資具有 `isForeignAllowed` 特性的建築。你可獲得高達 70% 的產出，地主僅能抽成 30%。</p>
-                </div>
-            </div>
+            <p id="lobby-msg" class="text-xs text-rose-400 mt-4 h-4">伺服器連線中，請稍候...</p>
         </div>
     </div>
 
-    <div id="waiting-screen" class="hidden absolute inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+    <!-- 等待大廳畫面 -->
+    <div id="waiting-screen" class="hidden absolute inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] p-4">
         <div class="bg-slate-900 p-8 rounded-2xl border border-slate-700 shadow-2xl max-w-md w-full neon-border text-center">
             <h2 class="text-2xl font-bold text-sky-400 mb-2 neon-text">
                 <i class="fa-solid fa-hourglass-half mr-2 animate-spin"></i>等待玩家加入
@@ -139,6 +139,7 @@
         </div>
     </div>
 
+    <!-- 遊戲主畫面 -->
     <div id="game-screen" class="hidden flex-col h-full relative">
         
         <!-- 頂部 HUD (狀態列) -->
@@ -153,8 +154,8 @@
                 </div>
             </div>
             
-            <div id="players-hud" class="flex gap-2.5 flex-1 justify-center px-4 overflow-x-auto">
-                <!-- 玩家卡片動態生成 -->
+            <div id="players-hud" class="flex gap-3 flex-1 justify-center px-4 overflow-x-auto">
+                <!-- 玩家卡片由 updateHUD() 動態生成 -->
             </div>
 
             <div class="flex gap-2">
@@ -271,7 +272,7 @@
 
             <!-- 建築列表 -->
             <div id="build-list" class="p-4 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-3 flex-1">
-                <!-- 建築卡片動態生成 -->
+                <!-- 動態生成 -->
             </div>
         </div>
     </div>
@@ -289,11 +290,11 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, onSnapshot, runTransaction, writeBatch, query, where, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         // ==========================================
-        // 設定與常數
+        // 1. 設定與常數
         // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyBk7WIy-astev2zZtHP1l-299T1YBhW4cQ",
@@ -306,19 +307,18 @@
             measurementId: "G-X811PBTHKQ"
         };
 
-        const APP_ID = typeof __app_id !== 'undefined' ? __app_id : 'sdgs-game';
-        const BASE_PATH = `artifacts/${APP_ID}/public/data`;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'sdgs-game';
         
-        // 遊戲景點建築庫資料
+        // 遊戲建築配置數據
         const BUILDINGS = [
             { id:"local_market", name:"在地老街市集", category:"cultural", unlockStage:"Exploration", baseCost:20, baseTime:5, GDPPerTick:4, envPerTick:0, socPerTick:2, GDPGrowth:4, envGrowth:0, socGrowth:2, isForeignAllowed:false, icon:"fa-store" },
             { id:"history_museum", name:"歷史文化博物館", category:"cultural", unlockStage:"Involvement", baseCost:60, baseTime:10, GDPPerTick:8, envPerTick:0, socPerTick:6, GDPGrowth:6, envGrowth:0, socGrowth:5, isForeignAllowed:false, icon:"fa-building-columns" },
             { id:"heritage_park", name:"世界文化遺產公園", category:"cultural", unlockStage:"Consolidation", baseCost:450, baseTime:20, GDPPerTick:40, envPerTick:5, socPerTick:25, GDPGrowth:30, envGrowth:4, socGrowth:20, isForeignAllowed:false, icon:"fa-monument" },
             { id:"nature_trail", name:"自然生態步道", category:"natural", unlockStage:"Exploration", baseCost:15, baseTime:5, GDPPerTick:1, envPerTick:3, socPerTick:0, GDPGrowth:1, envGrowth:3, socGrowth:0, isForeignAllowed:false, icon:"fa-shoe-prints" },
-            { id:"forest_camp", name:"森林露營營地", category:"natural", unlockStage:"Involvement", baseCost:50, baseTime:10, GDPPerTick:6, envPerTick:6, socPerTick:-1, GDPGrowth:5, envGrowth:5, socGrowth:-1, isForeignAllowed:false, icon:"fa-campground" },
+            { id:"forest_camp", name:"森林露營營地", category:"natural", unlockStage:"Involvement", baseCost:50, baseTime:10, GDPPerTick:6, envPerTick:6, socPerTick:-1, GDPGrowth:5, envGrowth:5, ...-1, isForeignAllowed:false, icon:"fa-campground" },
             { id:"marine_reserve", name:"國家海洋保育區", category:"natural", unlockStage:"Development", baseCost:250, baseTime:15, GDPPerTick:10, envPerTick:20, socPerTick:2, GDPGrowth:8, envGrowth:18, socGrowth:2, isForeignAllowed:false, icon:"fa-fish-fins" },
             { id:"youth_hostel", name:"特色青年民宿", category:"leisure", unlockStage:"Involvement", baseCost:40, baseTime:10, GDPPerTick:8, envPerTick:-1, socPerTick:1, GDPGrowth:6, envGrowth:-1, socGrowth:1, isForeignAllowed:false, evolveTo:"star_hotel", icon:"fa-bed" },
-            { id:"star_hotel", name:"星級度假酒店", category:"leisure", unlockStage:"Involvement", baseCost:100, baseTime:10, GDPPerTick:24, envPerTick:-2, socPerTick:-1, GDPGrowth:18, envGrowth:-1, socGrowth:-1, isForeignAllowed:false, icon:"fa-hotel" },
+            { id:"star_hotel", name:"星級度假酒店", category:"leisure", unlockStage:"Involvement", baseCost:100, baseTime:10, GDPPerTick:24, envPerTick:-2, ...-1, GDPGrowth:18, envGrowth:-1, socGrowth:-1, isForeignAllowed:false, icon:"fa-hotel" },
             { id:"water_park", name:"海洋水上樂園", category:"leisure", unlockStage:"Development", baseCost:200, baseTime:15, GDPPerTick:45, envPerTick:-4, socPerTick:-2, GDPGrowth:35, envGrowth:-2, socGrowth:-2, isForeignAllowed:false, icon:"fa-water" },
             { id:"shopping_mall", name:"大型免稅購物中心", category:"leisure", unlockStage:"Development", baseCost:350, baseTime:15, GDPPerTick:85, envPerTick:-6, socPerTick:-4, GDPGrowth:65, envGrowth:-3, socGrowth:-2, isForeignAllowed:true, icon:"fa-bag-shopping" },
             { id:"marathon", name:"國際半程馬拉松", category:"activities", unlockStage:"Involvement", baseCost:55, baseTime:10, GDPPerTick:12, envPerTick:-2, socPerTick:4, GDPGrowth:10, envGrowth:-1, socGrowth:3, isForeignAllowed:false, icon:"fa-person-running" },
@@ -352,35 +352,22 @@
             entertainment: { bg: 'bg-purple-950/50', border: 'border-purple-800', text: 'text-purple-400' }
         };
 
-        // ==========================================
-        // Helper 函數
-        // ==========================================
         function getInitialPlayer(uid, roomId, name, isAI, index) {
             return {
-                uid, roomId, name, isAI, index,
+                uid: uid, roomId: roomId, name: name, isAI: isAI, index: index,
                 gdp: 150, env: 30, soc: 30, pop: 0,
                 score: 0, totalAssets: 0, stage: 'Exploration',
                 declineTicks: 0
             };
         }
 
-        function toggleRules() {
-            const content = document.getElementById('rules-content');
-            const icon = document.getElementById('rules-icon');
-            if (content.classList.contains('hidden')) {
-                content.classList.remove('hidden');
-                icon.classList.add('rotate-180');
-            } else {
-                content.classList.add('hidden');
-                icon.classList.remove('rotate-180');
-            }
-        }
-        window.toggleRules = toggleRules;
-
         // ==========================================
         // 2. 狀態與全域變數
         // ==========================================
-        let app, db, auth; 
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
         let myUid = null;
         let currentRoomId = null;
         let timeMultiplier = 1; 
@@ -402,27 +389,28 @@
         let audioCtx;
 
         // ==========================================
-        // 3. STREAMING_CHUNK: 初始化與 Web Audio API 音效
+        // 3. 初始化與音效
         // ==========================================
         async function initApp() {
             try {
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
+                // 依照 RULE 3 嚴格驗證認證優先權
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
 
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        myUid = user.uid;
-                        document.getElementById('btn-create-room').disabled = false;
-                        document.getElementById('btn-join-room').disabled = false;
-                    }
-                });
-                await signInAnonymously(auth);
+                myUid = auth.currentUser.uid;
+                
+                // 成功登入後啟用首頁操作
+                document.getElementById('btn-create-room').disabled = false;
+                document.getElementById('btn-join-room').disabled = false;
+                document.getElementById('lobby-msg').textContent = "";
 
                 setupUIEventListeners();
             } catch (e) {
                 console.error("Firebase 初始化失敗:", e);
-                showLobbyMsg("系統連線失敗，請檢查網路。");
+                document.getElementById('lobby-msg').textContent = "伺服器連線失敗，請重試或確認網路。";
             }
         }
 
@@ -470,10 +458,14 @@
         }
 
         // ==========================================
-        // 4. STREAMING_CHUNK: 建立與加入大廳邏輯 (防併發 Transaction)
+        // 4. 建立 / 加入 / 離開大廳邏輯 (嚴格遵循 RULE 1 & RULE 2)
         // ==========================================
         function showLobbyMsg(msg) {
             document.getElementById('lobby-msg').textContent = msg;
+        }
+
+        function generateRoomId() {
+            return Math.random().toString(36).substring(2, 8).toUpperCase();
         }
 
         async function createRoom() {
@@ -486,8 +478,8 @@
             currentRoomId = roomId;
             
             try {
-                // 1. 建立房間狀態為 waiting
-                const roomRef = doc(db, `${BASE_PATH}/rooms`, roomId);
+                // RULE 1 嚴格路徑：/artifacts/{appId}/public/data/rooms/{roomId}
+                const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomId);
                 await setDoc(roomRef, {
                     id: roomId,
                     status: 'waiting', 
@@ -498,14 +490,14 @@
                     startTime: 0
                 });
 
-                // 2. 建立房主玩家資料
-                const pRef = doc(db, `${BASE_PATH}/players`, `${roomId}_${myUid}`);
+                // RULE 1 嚴格路徑：/artifacts/{appId}/public/data/players/{docId}
+                const pRef = doc(db, 'artifacts', appId, 'public', 'data', 'players', `${roomId}_${myUid}`);
                 await setDoc(pRef, getInitialPlayer(myUid, roomId, playerName, false, 0));
 
                 enterWaitingLobby(roomId);
             } catch (e) {
                 console.error(e);
-                showLobbyMsg("建立房間失敗");
+                showLobbyMsg("建立房間失敗，請重試。");
             }
         }
 
@@ -518,7 +510,7 @@
 
             try {
                 await runTransaction(db, async (t) => {
-                    const roomRef = doc(db, `${BASE_PATH}/rooms`, roomId);
+                    const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomId);
                     const roomSnap = await t.get(roomRef);
                     if (!roomSnap.exists()) throw "房間不存在";
                     
@@ -530,11 +522,11 @@
                     const newPlayers = [...roomData.players, myUid];
                     const slotIndex = newPlayers.length - 1;
 
-                    // 更新房間的玩家清單
+                    // 更新房間的玩家名單
                     t.update(roomRef, { players: newPlayers });
 
-                    // 寫入自己的玩家文件
-                    const playerRef = doc(db, `${BASE_PATH}/players`, `${roomId}_${myUid}`);
+                    // 寫入自己的玩家數據
+                    const playerRef = doc(db, 'artifacts', appId, 'public', 'data', 'players', `${roomId}_${myUid}`);
                     t.set(playerRef, getInitialPlayer(myUid, roomId, playerName, false, slotIndex));
                 });
 
@@ -542,7 +534,7 @@
                 enterWaitingLobby(roomId);
             } catch (e) {
                 console.error(e);
-                showLobbyMsg(typeof e === 'string' ? e : "加入房間失敗");
+                showLobbyMsg(typeof e === 'string' ? e : "加入房間失敗，請檢查ID。");
             }
         }
 
@@ -551,15 +543,15 @@
             const roomId = currentRoomId;
             try {
                 await runTransaction(db, async (t) => {
-                    const roomRef = doc(db, `${BASE_PATH}/rooms`, roomId);
+                    const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomId);
                     const roomSnap = await t.get(roomRef);
                     if (!roomSnap.exists()) return;
 
                     const roomData = roomSnap.data();
                     const playersList = roomData.players.filter(uid => uid !== myUid);
 
-                    // 刪除玩家資料
-                    const playerRef = doc(db, `${BASE_PATH}/players`, `${roomId}_${myUid}`);
+                    // 刪除本地玩家資料
+                    const playerRef = doc(db, 'artifacts', appId, 'public', 'data', 'players', `${roomId}_${myUid}`);
                     t.delete(playerRef);
 
                     if (playersList.length === 0) {
@@ -580,13 +572,13 @@
         }
 
         // ==========================================
-        // 5. STREAMING_CHUNK: 房主開始遊戲 (AI與地塊初始化)
+        // 5. 房主啟動遊戲並配置 AI 
         // ==========================================
         async function startRoomGame() {
             if (!currentRoomId) return;
             try {
                 await runTransaction(db, async (t) => {
-                    const roomRef = doc(db, `${BASE_PATH}/rooms`, currentRoomId);
+                    const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
                     const roomSnap = await t.get(roomRef);
                     if (!roomSnap.exists()) throw "房間不存在";
                     const roomData = roomSnap.data();
@@ -601,16 +593,16 @@
                         const aiId = `ai_${aiCount}`;
                         finalPlayers.push(aiId);
                         
-                        const aiRef = doc(db, `${BASE_PATH}/players`, `${currentRoomId}_${aiId}`);
+                        const aiRef = doc(db, 'artifacts', appId, 'public', 'data', 'players', `${currentRoomId}_${aiId}`);
                         t.set(aiRef, getInitialPlayer(aiId, currentRoomId, aiNames[aiCount - 1], true, finalPlayers.length - 1));
                         aiCount++;
                     }
 
-                    // 初始化 48 塊地盤 (每人 12 塊)
+                    // 初始化 48 塊地盤 (每人12塊)
                     for (let i = 0; i < 48; i++) {
                         const ownerIndex = Math.floor(i / 12);
                         const ownerId = finalPlayers[ownerIndex];
-                        const plotRef = doc(db, `${BASE_PATH}/plots`, `${currentRoomId}_${i}`);
+                        const plotRef = doc(db, 'artifacts', appId, 'public', 'data', 'plots', `${currentRoomId}_${i}`);
                         t.set(plotRef, {
                             roomId: currentRoomId,
                             plotIndex: i,
@@ -624,7 +616,7 @@
                         });
                     }
 
-                    // 更新房間狀態，正式開戰
+                    // 設置狀態為正式開戰
                     t.update(roomRef, {
                         status: 'playing',
                         players: finalPlayers,
@@ -638,14 +630,13 @@
         }
 
         // ==========================================
-        // 6. STREAMING_CHUNK: 進入等待大廳與實時監聽
+        // 6. 進入大廳與實時監聽 (RULE 2 記憶體篩選)
         // ==========================================
         function enterWaitingLobby(roomId) {
             document.getElementById('lobby-screen').classList.add('hidden');
             document.getElementById('waiting-screen').classList.remove('hidden');
             document.getElementById('waiting-room-id').textContent = roomId;
 
-            // 複製房間ID事件
             document.getElementById('waiting-room-id').onclick = () => {
                 const dummy = document.createElement("input");
                 document.body.appendChild(dummy);
@@ -660,14 +651,13 @@
         }
 
         function setupListeners(roomId) {
-            // 1. 監聽房間狀態變更
-            unsubRoom = onSnapshot(doc(db, `${BASE_PATH}/rooms`, roomId), (docSnap) => {
+            // 監聽房間狀態
+            unsubRoom = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomId), (docSnap) => {
                 if (!docSnap.exists()) return;
                 const rData = docSnap.data();
                 localState.room = rData;
                 timeMultiplier = rData.timeMultiplier;
 
-                // 大廳/遊戲畫面切換
                 if (rData.status === 'waiting') {
                     document.getElementById('waiting-screen').classList.remove('hidden');
                     document.getElementById('game-screen').classList.add('hidden');
@@ -694,16 +684,15 @@
                 }
             });
 
-            // 2. 監聽玩家狀態
-            const pQuery = query(collection(db, `${BASE_PATH}/players`), where("roomId", "==", roomId));
+            // 監聽玩家 (單條件 query 以符合 RULE 2 避免複合索引報錯)
+            const pQuery = query(collection(db, 'artifacts', appId, 'public', 'data', 'players'), where("roomId", "==", roomId));
             unsubPlayers = onSnapshot(pQuery, (snapshot) => {
                 const tempPlayers = {};
-                snapshot.forEach(doc => {
-                    tempPlayers[doc.data().uid] = doc.data();
+                snapshot.forEach(docSnap => {
+                    tempPlayers[docSnap.data().uid] = docSnap.data();
                 });
                 localState.players = tempPlayers;
 
-                // 如果還在等待大廳，更新大廳玩家列表
                 if (localState.room && localState.room.status === 'waiting') {
                     renderWaitingPlayers();
                 } else {
@@ -712,11 +701,11 @@
                 }
             });
 
-            // 3. 監聽地塊數據
-            const pltQuery = query(collection(db, `${BASE_PATH}/plots`), where("roomId", "==", roomId));
+            // 監聽地塊
+            const pltQuery = query(collection(db, 'artifacts', appId, 'public', 'data', 'plots'), where("roomId", "==", roomId));
             unsubPlots = onSnapshot(pltQuery, (snapshot) => {
-                snapshot.forEach(doc => {
-                    localState.plots[doc.data().plotIndex] = doc.data();
+                snapshot.forEach(docSnap => {
+                    localState.plots[docSnap.data().plotIndex] = docSnap.data();
                 });
                 if (localState.room && localState.room.status === 'playing') {
                     renderGrid();
@@ -729,7 +718,11 @@
             const listContainer = document.getElementById('waiting-players-list');
             listContainer.innerHTML = '';
             
-            const players = Object.values(localState.players).sort((a,b) => a.index - b.index);
+            // 篩選所有本房玩家並進行排序 (符合 RULE 2 的 JS 記憶體處理)
+            const players = Object.values(localState.players)
+                .filter(p => p.roomId === currentRoomId)
+                .sort((a,b) => a.index - b.index);
+                
             document.getElementById('waiting-player-count').textContent = players.length;
 
             for (let i = 0; i < 4; i++) {
@@ -758,14 +751,13 @@
         }
 
         // ==========================================
-        // 7. STREAMING_CHUNK: 遊戲對戰主迴圈與分佈式本地 Ticks 結算
+        // 7. 遊戲主迴圈與分佈式結算邏輯
         // ==========================================
         function enterGame(roomId) {
             localState.viewingUid = myUid;
             gameLoopInterval = setInterval(gameTick, 5000);
             requestAnimationFrame(renderLoop);
             
-            // 如果是房主，啟動 AI 決策迴圈
             if (localState.room.hostId === myUid) {
                 setInterval(aiLoop, 4000); 
             }
@@ -791,6 +783,7 @@
             currentRoomId = null;
         }
 
+        // 核心計算：計算玩家名下地盤及跨國投資分流
         async function gameTick() {
             if (!localState.room || localState.room.status !== 'playing' || !localState.players[myUid]) return;
 
@@ -799,7 +792,6 @@
             let myPlots = [];
             let comboGdp = 0, comboEnv = 0, comboSoc = 0;
 
-            // 1. 計算名下地盤與跨國企業分流產出
             Object.values(localState.plots).forEach(plot => {
                 if (plot.status !== 'built') return;
                 
@@ -815,20 +807,19 @@
                     if (plot.builderId === myUid || !plot.builderId) {
                         deltaGdp += plotGdp; deltaEnv += plotEnv; deltaSoc += plotSoc;
                     } else {
-                        // 別人跨國蓋在我家：地主抽 30%
+                        // 跨國企業抽成：地主獲得 30%
                         deltaGdp += Math.floor(plotGdp * 0.3);
                         deltaEnv += Math.floor(plotEnv * 0.3);
                         deltaSoc += Math.floor(plotSoc * 0.3);
                     }
                 } else if (plot.builderId === myUid) {
-                    // 我跨國投資別人：我(投資人)抽 70%
+                    // 跨國投資：我抽 70% 產出
                     deltaGdp += Math.floor(plotGdp * 0.7);
                     deltaEnv += Math.floor(plotEnv * 0.7);
                     deltaSoc += Math.floor(plotSoc * 0.7);
                 }
             });
 
-            // 2. 結算本地組合加成
             const myBuildingIds = myPlots.map(p => p.buildingId);
             const cats = new Set(myPlots.map(p => BUILDINGS.find(b=>b.id===p.buildingId)?.category).filter(Boolean));
             
@@ -849,7 +840,6 @@
 
             deltaGdp += comboGdp; deltaEnv += comboEnv; deltaSoc += comboSoc;
 
-            // 3. 衰落期產出減半
             let isDeclining = me.stage === 'Decline';
             if (isDeclining) {
                 deltaGdp = Math.floor(deltaGdp / 2);
@@ -857,13 +847,11 @@
                 deltaSoc = Math.floor(deltaSoc / 2);
             }
 
-            // 更新暫存判定
             localState.lastEnvRecord.push(me.env > 0);
             localState.lastSocRecord.push(me.soc > 0);
             if (localState.lastEnvRecord.length > 3) localState.lastEnvRecord.shift();
             if (localState.lastSocRecord.length > 3) localState.lastSocRecord.shift();
 
-            // 4. 計算新狀態並上報
             let newGdp = Math.max(0, me.gdp + deltaGdp);
             let newEnv = Math.max(0, me.env + deltaEnv);
             let newSoc = Math.max(0, me.soc + deltaSoc);
@@ -877,7 +865,6 @@
             let m = timeMultiplier;
 
             if (isDeclining) {
-                // 連續15秒滿足條件走出衰落
                 if (localState.lastEnvRecord.length === 3 && localState.lastEnvRecord.every(v=>v) &&
                     localState.lastSocRecord.length === 3 && localState.lastSocRecord.every(v=>v)) {
                     isDeclining = false;
@@ -906,7 +893,6 @@
                 showNotification(`升級至 ${STAGES[newStage].name}！`, "text-sky-400");
             }
 
-            // 更新資源變更量文字
             document.getElementById('my-gdp-tick').textContent = (deltaGdp>=0?'+':'') + deltaGdp;
             document.getElementById('my-env-tick').textContent = (deltaEnv>=0?'+':'') + deltaEnv;
             document.getElementById('my-soc-tick').textContent = (deltaSoc>=0?'+':'') + deltaSoc;
@@ -915,14 +901,15 @@
             document.getElementById('my-soc-tick').className = `text-xs ${deltaSoc>=0?'text-emerald-400':'text-rose-400'}`;
 
             try {
-                await updateDoc(doc(db, `${BASE_PATH}/players`, `${currentRoomId}_${myUid}`), {
+                const playerRef = doc(db, 'artifacts', appId, 'public', 'data', 'players', `${currentRoomId}_${myUid}`);
+                await updateDoc(playerRef, {
                     gdp: newGdp, env: newEnv, soc: newSoc, pop: newPop, score: newScore, stage: newStage
                 });
             } catch(e) { console.error("Tick update failed", e); }
         }
 
         // ==========================================
-        // 8. STREAMING_CHUNK: 畫面渲染 HUD（重構加入顯著發展度與排名顯示）
+        // 8. 畫面渲染與動畫邏輯 (優雅 HUD & 精緻排名)
         // ==========================================
         function updateHUD() {
             const container = document.getElementById('players-hud');
@@ -936,43 +923,42 @@
                 const sColor = STAGES[p.stage].color;
                 const isAlert = p.env <= 30 || p.soc <= 30;
 
-                // 排名高亮樣式
-                const rankColors = [
-                    'bg-amber-500/20 text-amber-300 border-amber-500/50', // #1 Gold
-                    'bg-slate-300/20 text-slate-200 border-slate-300/50', // #2 Silver
-                    'bg-amber-700/20 text-amber-600 border-amber-700/50', // #3 Bronze
-                    'bg-slate-700/20 text-slate-400 border-slate-700/50'  // #4 Gray
-                ];
-                const rankStyle = rankColors[index] || rankColors[3];
+                // 精緻徽章配色
+                let rankBadge = '';
+                let borderGlow = 'border-slate-700';
+                if (index === 0) {
+                    rankBadge = '<span class="bg-amber-500 text-slate-950 font-black px-2 py-0.5 rounded text-[10px] shadow-[0_0_8px_#f59e0b]">#1 金</span>';
+                    borderGlow = isView ? 'border-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.5)]' : 'border-amber-700';
+                } else if (index === 1) {
+                    rankBadge = '<span class="bg-slate-300 text-slate-950 font-black px-2 py-0.5 rounded text-[10px] shadow-[0_0_8px_#cbd5e1]">#2 銀</span>';
+                    borderGlow = isView ? 'border-slate-300 shadow-[0_0_12px_rgba(203,213,225,0.4)]' : 'border-slate-600';
+                } else if (index === 2) {
+                    rankBadge = '<span class="bg-amber-750 text-slate-100 font-black px-2 py-0.5 rounded text-[10px] shadow-[0_0_8px_#b45309]" style="background-color: #b45309">#3 銅</span>';
+                    borderGlow = isView ? 'border-amber-600 shadow-[0_0_12px_rgba(180,83,9,0.3)]' : 'border-amber-900';
+                } else {
+                    rankBadge = `<span class="bg-slate-700 text-slate-300 font-black px-2 py-0.5 rounded text-[10px]">#4</span>`;
+                    borderGlow = isView ? 'border-sky-500 shadow-[0_0_10px_rgba(14,165,233,0.3)]' : 'border-slate-800';
+                }
 
                 const div = document.createElement('div');
-                div.className = `min-w-[210px] p-2.5 rounded-xl cursor-pointer transition-all border-2 
-                    ${isView ? 'bg-slate-800 border-sky-500 shadow-[0_0_12px_rgba(14,165,233,0.6)]' : 'bg-slate-900 border-slate-700 hover:border-slate-500'}
-                    ${isAlert ? 'alert-flash' : ''}`;
+                div.className = `min-w-[190px] p-2.5 rounded-xl cursor-pointer transition-all border-2 bg-slate-900 ${borderGlow} ${isAlert ? 'alert-flash' : ''}`;
                 div.onclick = () => { localState.viewingUid = p.uid; renderGrid(); updateHUD(); renderRightPanel(); };
                 
                 div.innerHTML = `
-                    <div class="flex justify-between items-center mb-1">
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-[10px] font-black px-1.5 py-0.5 rounded border ${rankStyle}">
-                                #${index+1}
-                            </span>
-                            <span class="font-bold text-sm ${isMe ? 'text-sky-300' : 'text-slate-300'}">
-                                ${p.name}
-                            </span>
-                        </div>
-                        <span class="text-[10px] font-black uppercase tracking-wider ${sColor}">
-                            ${STAGES[p.stage].name}
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="font-bold text-sm truncate max-w-[100px] ${isMe ? 'text-sky-300' : 'text-slate-300'}">
+                            ${p.name} ${isMe ? '(我)' : ''}
                         </span>
+                        ${rankBadge}
                     </div>
-                    <div class="flex justify-between items-center text-xs mt-1.5 mb-1.5">
-                        <span class="text-slate-400 text-[11px]"><i class="fa-solid fa-ranking-star mr-1"></i>發展度:</span>
-                        <span class="font-mono font-black text-white text-sm">${p.score}</span>
+                    <div class="flex justify-between items-end mb-1">
+                        <span class="text-[10px] font-bold ${sColor}">${STAGES[p.stage].name}</span>
+                        <span class="font-mono text-xs font-black text-white">發展度: ${p.score}</span>
                     </div>
-                    <div class="flex gap-2 text-xs font-mono justify-between bg-slate-950/40 p-1 rounded border border-slate-800/50">
-                        <span class="text-amber-400"><i class="fa-solid fa-coins mr-0.5"></i>${p.gdp}</span>
-                        <span class="${p.env<=30?'text-rose-400 font-bold':'text-emerald-400'}"><i class="fa-solid fa-leaf mr-0.5"></i>${p.env}</span>
-                        <span class="${p.soc<=30?'text-rose-400 font-bold':'text-blue-400'}"><i class="fa-solid fa-hands-holding-circle mr-0.5"></i>${p.soc}</span>
+                    <div class="flex gap-2 text-xs font-mono justify-between bg-slate-950/60 p-1.5 rounded-lg border border-slate-800/40">
+                        <span class="text-amber-400 font-bold"><i class="fa-solid fa-coins"></i> ${p.gdp}</span>
+                        <span class="${p.env<=30?'text-rose-400':'text-emerald-400'} font-bold"><i class="fa-solid fa-leaf"></i> ${p.env}</span>
+                        <span class="${p.soc<=30?'text-rose-400':'text-blue-400'} font-bold"><i class="fa-solid fa-hands-holding-circle"></i> ${p.soc}</span>
                     </div>
                 `;
                 container.appendChild(div);
@@ -1105,7 +1091,7 @@
         }
 
         // ==========================================
-        // 9. STREAMING_CHUNK: 建造升級與改建操作
+        // 9. 建設升級與全自動判定迴圈 (託管完成)
         // ==========================================
         let selectedPlotIndex = null;
         let currentCat = 'all';
@@ -1227,11 +1213,11 @@
 
             try {
                 await runTransaction(db, async (t) => {
-                    const pRef = doc(db, `${BASE_PATH}/players`, `${currentRoomId}_${myUid}`);
+                    const pRef = doc(db, 'artifacts', appId, 'public', 'data', 'players', `${currentRoomId}_${myUid}`);
                     const pDoc = await t.get(pRef);
                     if (pDoc.data().gdp < cost) throw "餘額不足";
                     
-                    const plotRef = doc(db, `${BASE_PATH}/plots`, `${currentRoomId}_${plotIndex}`);
+                    const plotRef = doc(db, 'artifacts', appId, 'public', 'data', 'plots', `${currentRoomId}_${plotIndex}`);
                     const plotDoc = await t.get(plotRef);
                     if (plotDoc.data().status !== 'empty') throw "該地塊已被佔用";
 
@@ -1265,11 +1251,11 @@
             }
             try {
                 await runTransaction(db, async (t) => {
-                    const pRef = doc(db, `${BASE_PATH}/players`, `${currentRoomId}_${myUid}`);
+                    const pRef = doc(db, 'artifacts', appId, 'public', 'data', 'players', `${currentRoomId}_${myUid}`);
                     const pDoc = await t.get(pRef);
                     if (pDoc.data().gdp < cost) throw "餘額不足";
                     
-                    const plotRef = doc(db, `${BASE_PATH}/plots`, `${currentRoomId}_${plotIndex}`);
+                    const plotRef = doc(db, 'artifacts', appId, 'public', 'data', 'plots', `${currentRoomId}_${plotIndex}`);
                     const plotDoc = await t.get(plotRef);
                     if (plotDoc.data().status !== 'built' || plotDoc.data().level >= 5) throw "無法升級";
 
@@ -1298,11 +1284,11 @@
              const timeSec = 15;
              try {
                 await runTransaction(db, async (t) => {
-                    const pRef = doc(db, `${BASE_PATH}/players`, `${currentRoomId}_${myUid}`);
+                    const pRef = doc(db, 'artifacts', appId, 'public', 'data', 'players', `${currentRoomId}_${myUid}`);
                     const pDoc = await t.get(pRef);
                     if (pDoc.data().gdp < cost) throw "餘額不足";
                     
-                    const plotRef = doc(db, `${BASE_PATH}/plots`, `${currentRoomId}_${plotIndex}`);
+                    const plotRef = doc(db, 'artifacts', appId, 'public', 'data', 'plots', `${currentRoomId}_${plotIndex}`);
                     
                     t.update(pRef, { 
                         gdp: pDoc.data().gdp - cost,
@@ -1324,6 +1310,7 @@
         window.upgradePlot = upgradePlot;
         window.evolvePlot = evolvePlot;
 
+        // 全域完工判定（包含房主代理完工，避免 AI 卡頓不操作）
         function renderLoop() {
             if (!localState.room || localState.room.status !== 'playing') {
                 animationFrameId = requestAnimationFrame(renderLoop);
@@ -1332,6 +1319,7 @@
 
             const now = Date.now();
             let queueCount = 0;
+            const isHost = localState.room.hostId === myUid;
 
             Object.values(localState.plots).forEach(plot => {
                 if (plot.status === 'building') {
@@ -1344,16 +1332,13 @@
                     const bar = document.getElementById(`prog-${plot.plotIndex}`);
                     if (bar) bar.style.width = `${percent}%`;
 
-                    // 【核心修復】：當非真人玩家 (AI) 倒數完成且當前玩家為房主時，由房主代理上報 AI 完成
-                    if (passed >= total && !plot.finishing) {
-                        const isHost = localState.room && localState.room.hostId === myUid;
-                        if (plot.builderId === myUid) {
-                            plot.finishing = true; 
-                            finishBuild(plot.plotIndex, myUid);
-                        } else if (plot.builderId && plot.builderId.startsWith('ai_') && isHost) {
-                            plot.finishing = true; 
-                            finishBuild(plot.plotIndex, plot.builderId);
-                        }
+                    // 完工：自己地塊自己寫，AI的地塊則由房主託管寫入 (極度關鍵！解決 AI 卡死問題)
+                    const isMyOwnTask = plot.builderId === myUid;
+                    const isAiTaskDelegatedToMe = !isMyOwnTask && isHost && String(plot.builderId).startsWith('ai_');
+
+                    if (passed >= total && (isMyOwnTask || isAiTaskDelegatedToMe) && !plot.finishing) {
+                        plot.finishing = true; 
+                        finishBuild(plot.plotIndex, plot.builderId);
                     }
                 }
             });
@@ -1365,24 +1350,21 @@
 
         async function finishBuild(plotIndex, builderId) {
             try {
-                await updateDoc(doc(db, `${BASE_PATH}/plots`, `${currentRoomId}_${plotIndex}`), {
+                const plotRef = doc(db, 'artifacts', appId, 'public', 'data', 'plots', `${currentRoomId}_${plotIndex}`);
+                await updateDoc(plotRef, {
                     status: 'built',
                     startedAt: 0,
                     finishTime: 0
                 });
-                
-                const builderName = localState.players[builderId]?.name || "城市";
                 if (builderId === myUid) {
                     showNotification("建設完成！", "text-sky-400");
                     spawnParticles(document.getElementById('plots-container'), '★', '#f59e0b');
-                } else {
-                    showNotification(`${builderName} 建設完成！`, "text-amber-400");
                 }
             } catch(e) { console.error("Finish error", e); }
         }
 
         // ==========================================
-        // 10. STREAMING_CHUNK: 旅客與 AI 行為引擎（已排除未定義與卡頓錯誤）
+        // 10. 旅客系統與 AI 託管核心
         // ==========================================
         async function dispatchTourists(targetUid) {
             if (targetUid === myUid) return;
@@ -1390,8 +1372,8 @@
             
             try {
                 await runTransaction(db, async (t) => {
-                    const myRef = doc(db, `${BASE_PATH}/players`, `${currentRoomId}_${myUid}`);
-                    const targetRef = doc(db, `${BASE_PATH}/players`, `${currentRoomId}_${targetUid}`);
+                    const myRef = doc(db, 'artifacts', appId, 'public', 'data', 'players', `${currentRoomId}_${myUid}`);
+                    const targetRef = doc(db, 'artifacts', appId, 'public', 'data', 'players', `${currentRoomId}_${targetUid}`);
                     
                     const myDoc = await t.get(myRef);
                     const targetDoc = await t.get(targetRef);
@@ -1435,7 +1417,7 @@
                 const p = localState.players[uid];
                 if (!p.isAI) continue;
 
-                // AI Tick 計算
+                // AI 結算
                 let deltaGdp = 0, deltaEnv = 0, deltaSoc = 0;
                 let aiPlots = [];
                 Object.values(localState.plots).forEach(plot => {
@@ -1483,12 +1465,13 @@
                 }
                 
                 try {
-                    await updateDoc(doc(db, `${BASE_PATH}/players`, `${currentRoomId}_${uid}`), {
+                    const aiRef = doc(db, 'artifacts', appId, 'public', 'data', 'players', `${currentRoomId}_${uid}`);
+                    await updateDoc(aiRef, {
                         gdp: newGdp, env: newEnv, soc: newSoc, pop: newPop, score: newScore, stage: newStage
                     });
                 } catch(e){}
 
-                // AI 建造決策判定 (若 AI 正有地在建造中，便略過不重複蓋房)
+                // AI 行為決策
                 const isBuilding = Object.values(localState.plots).some(pt => pt.builderId === uid && pt.status === 'building');
                 if (isBuilding) continue;
 
@@ -1499,7 +1482,6 @@
 
                 let actionTaken = false;
                 
-                // 優先決策 1: 急救低迷指標的建築升級
                 if (builtPlots.length > 0 && (newEnv <= 35 || newSoc <= 35)) {
                     for (let pt of builtPlots) {
                         const b = BUILDINGS.find(x => x.id === pt.buildingId);
@@ -1513,7 +1495,6 @@
                     }
                 }
 
-                // 優先決策 2: 地塊建設空地擴充
                 if (!actionTaken && emptyPlots.length > 0) {
                     const aiStageIdx = Object.keys(STAGES).indexOf(newStage);
                     const unlocked = BUILDINGS.filter(b => Object.keys(STAGES).indexOf(b.unlockStage) <= aiStageIdx && b.baseCost <= newGdp);
@@ -1523,8 +1504,8 @@
                             const eco = unlocked.filter(b => b.envPerTick > 0);
                             if (eco.length > 0) choice = eco[0];
                         } else if (newSoc <= 35) {
-                            const socFilter = unlocked.filter(b => b.socPerTick > 0);
-                            if (socFilter.length > 0) choice = socFilter[0];
+                            const BarnesSoc = unlocked.filter(b => b.socPerTick > 0);
+                            if (BarnesSoc.length > 0) choice = BarnesSoc[0];
                         }
                         await startAiBuild(emptyPlots[0].plotIndex, uid, choice.id, choice.baseCost, choice.baseTime, 1);
                         actionTaken = true;
@@ -1536,25 +1517,23 @@
         async function startAiBuild(plotIndex, uid, buildingId, cost, timeSec, newLevel) {
             try {
                 await runTransaction(db, async (t) => {
-                    const pRef = doc(db, `${BASE_PATH}/players`, `${currentRoomId}_${uid}`);
-                    const plotRef = doc(db, `${BASE_PATH}/plots`, `${currentRoomId}_./${plotIndex}`);
-                    // Note: Use matching absolute paths
-                    const realPlotRef = doc(db, `${BASE_PATH}/plots`, `${currentRoomId}_${plotIndex}`);
+                    const pRef = doc(db, 'artifacts', appId, 'public', 'data', 'players', `${currentRoomId}_${uid}`);
+                    const plotRef = doc(db, 'artifacts', appId, 'public', 'data', 'plots', `${currentRoomId}_${plotIndex}`);
                     const pDoc = await t.get(pRef);
                     if (pDoc.data().gdp < cost) throw "AI Poor";
                     
                     t.update(pRef, { gdp: pDoc.data().gdp - cost, totalAssets: pDoc.data().totalAssets + cost });
                     if (buildingId) {
-                        t.update(realPlotRef, { status: 'building', buildingId: buildingId, builderId: uid, level: 1, startedAt: Date.now(), finishTime: Date.now() + (timeSec * 1000) });
+                        t.update(plotRef, { status: 'building', buildingId: buildingId, builderId: uid, level: 1, startedAt: Date.now(), finishTime: Date.now() + (timeSec * 1000) });
                     } else {
-                        t.update(realPlotRef, { status: 'building', level: newLevel, startedAt: Date.now(), finishTime: Date.now() + (timeSec * 1000) });
+                        t.update(plotRef, { status: 'building', level: newLevel, startedAt: Date.now(), finishTime: Date.now() + (timeSec * 1000) });
                     }
                 });
             } catch(e){}
         }
 
         // ==========================================
-        // 11. STREAMING_CHUNK: 倒數計時與時間同步器
+        // 11. 倒數計時與輔助函數
         // ==========================================
         function updateTimeDisplay() {
             if (!localState.room || localState.room.status !== 'playing') return;
@@ -1578,7 +1557,8 @@
             }
 
             if (remaining === 0 && localState.room.status === 'playing' && localState.room.hostId === myUid) {
-                updateDoc(doc(db, `${BASE_PATH}/rooms`, currentRoomId), { status: 'ended' });
+                const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
+                updateDoc(roomRef, { status: 'ended' });
             }
         }
 
@@ -1648,7 +1628,7 @@
         }
 
         // ==========================================
-        // 12. STREAMING_CHUNK: DOM 點擊事件綁定
+        // 12. DOM 事件與可摺疊面板手勢
         // ==========================================
         function setupUIEventListeners() {
             document.getElementById('btn-create-room').onclick = createRoom;
@@ -1656,6 +1636,19 @@
             document.getElementById('btn-start-game').onclick = startRoomGame;
             document.getElementById('btn-leave-waiting').onclick = leaveWaitingRoom;
             
+            // 規則說明折疊邏輯
+            document.getElementById('btn-toggle-rules').onclick = () => {
+                const content = document.getElementById('rules-content');
+                const icon = document.getElementById('rules-icon');
+                if (content.style.maxHeight === '0px' || !content.style.maxHeight) {
+                    content.style.maxHeight = '500px';
+                    icon.style.transform = 'rotate(180deg)';
+                } else {
+                    content.style.maxHeight = '0px';
+                    icon.style.transform = 'rotate(0deg)';
+                }
+            };
+
             document.getElementById('btn-toggle-sound').onclick = (e) => {
                 localState.isSoundOn = !localState.isSoundOn;
                 e.currentTarget.innerHTML = localState.isSoundOn ? '<i class="fa-solid fa-volume-high"></i>' : '<i class="fa-solid fa-volume-xmark"></i>';
@@ -1678,3 +1671,5 @@
     </script>
 </body>
 </html>
+
+```
