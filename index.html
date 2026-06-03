@@ -140,48 +140,52 @@
     </div>
 
     <!-- 遊戲主畫面 -->
-    <div id="game-screen" class="hidden flex-col h-full relative">
+    <div id="game-screen" class="hidden flex-col h-full relative overflow-hidden">
         
-        <!-- 頂部 HUD (狀態列) -->
-        <header class="bg-slate-900 border-b border-slate-800 p-2 flex justify-between items-center z-10 shrink-0 shadow-md">
-            <div class="flex items-center gap-4">
-                <div class="bg-slate-800 rounded px-3 py-1 flex items-center border border-slate-700">
-                    <i class="fa-solid fa-clock text-sky-400 mr-2"></i>
-                    <span id="time-display" class="font-mono text-xl font-bold text-white tracking-wider">05:00</span>
+        <!-- 頂部 HUD (高自適應響應式佈局：手機與平板友善) -->
+        <header class="bg-slate-900 border-b border-slate-800 p-2 md:p-3 flex flex-col lg:flex-row gap-2 lg:gap-4 justify-between items-center z-10 shrink-0 shadow-md">
+            
+            <!-- 左側時間與房號列 -->
+            <div class="flex flex-row items-center justify-between w-full lg:w-auto gap-2 shrink-0">
+                <div class="bg-slate-800 rounded px-2.5 py-1 flex items-center border border-slate-700">
+                    <i class="fa-solid fa-clock text-sky-400 mr-1.5 text-sm md:text-base"></i>
+                    <span id="time-display" class="font-mono text-lg md:text-xl font-bold text-white tracking-wider">05:00</span>
                 </div>
-                <div class="text-sm">
-                    房間 ID: <span id="display-room-id" class="text-sky-400 font-mono select-all"></span>
+                <div class="text-xs md:text-sm bg-slate-950 px-2.5 py-1 rounded border border-slate-850">
+                    ID: <span id="display-room-id" class="text-sky-400 font-mono select-all"></span>
                 </div>
             </div>
             
-            <div id="players-hud" class="flex gap-3 flex-1 justify-center px-4 overflow-x-auto">
+            <!-- 中間玩家對決看板 (支援流體橫向滑動與 grid 自適應) -->
+            <div id="players-hud" class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 md:gap-3 flex-1 w-full px-1 overflow-visible">
                 <!-- 玩家卡片由 updateHUD() 動態生成 -->
             </div>
 
-            <div class="flex gap-2">
-                <button id="btn-toggle-sound" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 transition-colors border border-slate-700">
+            <!-- 右側功能按鈕 -->
+            <div class="flex flex-row gap-2 shrink-0 self-end lg:self-auto mt-1 lg:mt-0">
+                <button id="btn-toggle-sound" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 transition-colors border border-slate-700 text-xs md:text-sm">
                     <i class="fa-solid fa-volume-high"></i>
                 </button>
-                <button id="btn-leave" class="px-3 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm border border-slate-700 transition-colors">
+                <button id="btn-leave" class="px-2.5 md:px-4 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs md:text-sm border border-slate-700 transition-colors">
                     離開
                 </button>
             </div>
         </header>
 
         <!-- 主體佈局 -->
-        <div class="flex flex-1 overflow-hidden">
+        <div class="flex flex-1 flex-col md:flex-row overflow-hidden">
             <!-- 左側/中央 網格區 -->
-            <main class="flex-1 p-4 overflow-y-auto relative bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950">
-                <div class="flex justify-between items-end mb-4">
+            <main class="flex-1 p-3 md:p-4 overflow-y-auto relative bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950">
+                <div class="flex justify-between items-end mb-3 md:mb-4">
                     <div>
-                        <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <h2 class="text-lg md:text-2xl font-bold flex items-center gap-1.5">
                             <span id="view-player-name" class="text-sky-300"></span> 的城市
-                            <span id="view-player-stage" class="text-xs px-2 py-1 bg-slate-800 rounded-full border border-slate-600 text-slate-300"></span>
+                            <span id="view-player-stage" class="text-[10px] md:text-xs px-2 py-0.5 md:py-1 bg-slate-800 rounded-full border border-slate-600 text-slate-300"></span>
                         </h2>
-                        <p class="text-sm text-slate-500 mt-1">點擊空地進行建設。階段越高，可開發地塊越多。</p>
+                        <p class="text-[10px] md:text-sm text-slate-500 mt-1">點擊空格建設。城市升級將自動釋放更多空地格網。</p>
                     </div>
                     <!-- 返回自己視角按鈕 -->
-                    <button id="btn-view-self" class="hidden bg-sky-600/20 hover:bg-sky-600/40 border border-sky-500/50 text-sky-400 px-3 py-1 rounded text-sm transition-colors">
+                    <button id="btn-view-self" class="hidden bg-sky-600/20 hover:bg-sky-600/40 border border-sky-500/50 text-sky-400 px-2.5 py-1 rounded text-xs md:text-sm transition-colors">
                         <i class="fa-solid fa-crosshairs mr-1"></i> 返回我的城市
                     </button>
                 </div>
@@ -192,55 +196,55 @@
             </main>
 
             <!-- 右側面板 (資訊與操作) -->
-            <aside class="w-80 bg-slate-900 border-l border-slate-800 flex flex-col shrink-0 z-10 shadow-[-5px_0_15px_rgba(0,0,0,0.5)]">
+            <aside class="w-full md:w-80 bg-slate-900 border-t md:border-t-0 md:border-l border-slate-800 flex flex-col shrink-0 z-10 shadow-[-5px_0_15px_rgba(0,0,0,0.5)] max-h-[35vh] md:max-h-none overflow-y-auto">
                 <!-- 資源總覽 -->
-                <div class="p-4 border-b border-slate-800">
-                    <h3 class="text-xs font-bold text-slate-500 uppercase mb-3">我的資源與產出 (每5秒)</h3>
-                    <div class="grid grid-cols-2 gap-2 text-sm">
-                        <div class="bg-slate-950 p-2 rounded border border-amber-900/50 flex flex-col">
-                            <span class="text-amber-400 font-bold"><i class="fa-solid fa-coins w-5"></i> GDP</span>
+                <div class="p-3 md:p-4 border-b border-slate-800">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase mb-2">我的資源與產出 (每5秒)</h3>
+                    <div class="grid grid-cols-2 gap-1.5 md:gap-2 text-xs md:text-sm">
+                        <div class="bg-slate-950 p-1.5 md:p-2 rounded border border-amber-900/50 flex flex-col">
+                            <span class="text-amber-400 font-bold"><i class="fa-solid fa-coins w-4"></i> GDP</span>
                             <div class="flex justify-between items-end">
-                                <span id="my-gdp" class="text-lg font-mono text-white">0</span>
-                                <span id="my-gdp-tick" class="text-xs text-emerald-400">+0</span>
+                                <span id="my-gdp" class="text-base md:text-lg font-mono text-white">0</span>
+                                <span id="my-gdp-tick" class="text-[10px] text-emerald-400">+0</span>
                             </div>
                         </div>
-                        <div class="bg-slate-950 p-2 rounded border border-emerald-900/50 flex flex-col">
-                            <span class="text-emerald-400 font-bold"><i class="fa-solid fa-leaf w-5"></i> ENV</span>
+                        <div class="bg-slate-950 p-1.5 md:p-2 rounded border border-emerald-900/50 flex flex-col">
+                            <span class="text-emerald-400 font-bold"><i class="fa-solid fa-leaf w-4"></i> ENV</span>
                             <div class="flex justify-between items-end">
-                                <span id="my-env" class="text-lg font-mono text-white">0</span>
-                                <span id="my-env-tick" class="text-xs text-slate-400">+0</span>
+                                <span id="my-env" class="text-base md:text-lg font-mono text-white">0</span>
+                                <span id="my-env-tick" class="text-[10px] text-slate-400">+0</span>
                             </div>
                         </div>
-                        <div class="bg-slate-950 p-2 rounded border border-blue-900/50 flex flex-col">
-                            <span class="text-blue-400 font-bold"><i class="fa-solid fa-hands-holding-circle w-5"></i> SOC</span>
+                        <div class="bg-slate-950 p-1.5 md:p-2 rounded border border-blue-900/50 flex flex-col">
+                            <span class="text-blue-400 font-bold"><i class="fa-solid fa-hands-holding-circle w-4"></i> SOC</span>
                             <div class="flex justify-between items-end">
-                                <span id="my-soc" class="text-lg font-mono text-white">0</span>
-                                <span id="my-soc-tick" class="text-xs text-slate-400">+0</span>
+                                <span id="my-soc" class="text-base md:text-lg font-mono text-white">0</span>
+                                <span id="my-soc-tick" class="text-[10px] text-slate-400">+0</span>
                             </div>
                         </div>
-                        <div class="bg-slate-950 p-2 rounded border border-purple-900/50 flex flex-col">
-                            <span class="text-purple-400 font-bold"><i class="fa-solid fa-users w-5"></i> POP</span>
+                        <div class="bg-slate-950 p-1.5 md:p-2 rounded border border-purple-900/50 flex flex-col">
+                            <span class="text-purple-400 font-bold"><i class="fa-solid fa-users w-4"></i> POP</span>
                             <div class="flex justify-between items-end">
-                                <span id="my-pop" class="text-lg font-mono text-white">0</span>
-                                <span id="my-pop-tick" class="text-xs text-purple-400">+10</span>
+                                <span id="my-pop" class="text-base md:text-lg font-mono text-white">0</span>
+                                <span id="my-pop-tick" class="text-[10px] text-purple-400">+10</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- 旅客派發 -->
-                <div class="p-4 border-b border-slate-800">
-                    <h3 class="text-xs font-bold text-slate-500 uppercase mb-2">國際行銷 (旅客派發)</h3>
-                    <p class="text-xs text-slate-400 mb-3">消耗 <span id="pop-cost-display" class="text-purple-400 font-bold">100</span> POP 向<span class="text-rose-400">當前視角城市</span>派客。造成對方 ENV/SOC 下降，並為你賺取 30% 佣金。</p>
-                    <button id="btn-dispatch" class="w-full bg-purple-600/80 hover:bg-purple-500 text-white py-2 rounded font-bold text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-purple-400/50">
-                        <i class="fa-solid fa-plane-departure mr-2"></i> 派發旅客
+                <div class="p-3 md:p-4 border-b border-slate-800">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase mb-1 md:mb-2">國際行銷 (旅客派發)</h3>
+                    <p class="text-[10px] md:text-xs text-slate-400 mb-2">消耗 <span id="pop-cost-display" class="text-purple-400 font-bold">100</span> POP 向<span class="text-rose-400">當前視角城市</span>派客。造成對方 ENV/SOC 下降，並為你賺取 30% 佣金。</p>
+                    <button id="btn-dispatch" class="w-full bg-purple-600/80 hover:bg-purple-500 text-white py-1.5 md:py-2 rounded font-bold text-xs md:text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-purple-400/50">
+                        <i class="fa-solid fa-plane-departure mr-1.5"></i> 派發旅客
                     </button>
                 </div>
 
                 <!-- 品牌組合加成 -->
-                <div class="p-4 flex-1 overflow-y-auto">
-                    <h3 class="text-xs font-bold text-slate-500 uppercase mb-3">品牌組合加成 (已啟用)</h3>
-                    <div id="combos-container" class="space-y-2">
+                <div class="p-3 md:p-4 flex-1 overflow-y-auto">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase mb-2">品牌組合加成 (已啟用)</h3>
+                    <div id="combos-container" class="space-y-1.5 md:space-y-2">
                         <!-- 組合列表動態生成 -->
                     </div>
                 </div>
@@ -309,16 +313,16 @@
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'sdgs-game';
         
-        // 遊戲建築配置數據
+        // 遊戲建築配置數據 (✅ 徹底修正 NaN 屬性與解構字元錯誤)
         const BUILDINGS = [
             { id:"local_market", name:"在地老街市集", category:"cultural", unlockStage:"Exploration", baseCost:20, baseTime:5, GDPPerTick:4, envPerTick:0, socPerTick:2, GDPGrowth:4, envGrowth:0, socGrowth:2, isForeignAllowed:false, icon:"fa-store" },
             { id:"history_museum", name:"歷史文化博物館", category:"cultural", unlockStage:"Involvement", baseCost:60, baseTime:10, GDPPerTick:8, envPerTick:0, socPerTick:6, GDPGrowth:6, envGrowth:0, socGrowth:5, isForeignAllowed:false, icon:"fa-building-columns" },
             { id:"heritage_park", name:"世界文化遺產公園", category:"cultural", unlockStage:"Consolidation", baseCost:450, baseTime:20, GDPPerTick:40, envPerTick:5, socPerTick:25, GDPGrowth:30, envGrowth:4, socGrowth:20, isForeignAllowed:false, icon:"fa-monument" },
             { id:"nature_trail", name:"自然生態步道", category:"natural", unlockStage:"Exploration", baseCost:15, baseTime:5, GDPPerTick:1, envPerTick:3, socPerTick:0, GDPGrowth:1, envGrowth:3, socGrowth:0, isForeignAllowed:false, icon:"fa-shoe-prints" },
-            { id:"forest_camp", name:"森林露營營地", category:"natural", unlockStage:"Involvement", baseCost:50, baseTime:10, GDPPerTick:6, envPerTick:6, socPerTick:-1, GDPGrowth:5, envGrowth:5, ...-1, isForeignAllowed:false, icon:"fa-campground" },
+            { id:"forest_camp", name:"森林露營營地", category:"natural", unlockStage:"Involvement", baseCost:50, baseTime:10, GDPPerTick:6, envPerTick:6, socPerTick:-1, GDPGrowth:5, envGrowth:5, socGrowth:-1, isForeignAllowed:false, icon:"fa-campground" },
             { id:"marine_reserve", name:"國家海洋保育區", category:"natural", unlockStage:"Development", baseCost:250, baseTime:15, GDPPerTick:10, envPerTick:20, socPerTick:2, GDPGrowth:8, envGrowth:18, socGrowth:2, isForeignAllowed:false, icon:"fa-fish-fins" },
             { id:"youth_hostel", name:"特色青年民宿", category:"leisure", unlockStage:"Involvement", baseCost:40, baseTime:10, GDPPerTick:8, envPerTick:-1, socPerTick:1, GDPGrowth:6, envGrowth:-1, socGrowth:1, isForeignAllowed:false, evolveTo:"star_hotel", icon:"fa-bed" },
-            { id:"star_hotel", name:"星級度假酒店", category:"leisure", unlockStage:"Involvement", baseCost:100, baseTime:10, GDPPerTick:24, envPerTick:-2, ...-1, GDPGrowth:18, envGrowth:-1, socGrowth:-1, isForeignAllowed:false, icon:"fa-hotel" },
+            { id:"star_hotel", name:"星級度假酒店", category:"leisure", unlockStage:"Involvement", baseCost:100, baseTime:10, GDPPerTick:24, envPerTick:-2, socPerTick:-1, GDPGrowth:18, envGrowth:-1, socGrowth:-1, isForeignAllowed:false, icon:"fa-hotel" },
             { id:"water_park", name:"海洋水上樂園", category:"leisure", unlockStage:"Development", baseCost:200, baseTime:15, GDPPerTick:45, envPerTick:-4, socPerTick:-2, GDPGrowth:35, envGrowth:-2, socGrowth:-2, isForeignAllowed:false, icon:"fa-water" },
             { id:"shopping_mall", name:"大型免稅購物中心", category:"leisure", unlockStage:"Development", baseCost:350, baseTime:15, GDPPerTick:85, envPerTick:-6, socPerTick:-4, GDPGrowth:65, envGrowth:-3, socGrowth:-2, isForeignAllowed:true, icon:"fa-bag-shopping" },
             { id:"marathon", name:"國際半程馬拉松", category:"activities", unlockStage:"Involvement", baseCost:55, baseTime:10, GDPPerTick:12, envPerTick:-2, socPerTick:4, GDPGrowth:10, envGrowth:-1, socGrowth:3, isForeignAllowed:false, icon:"fa-person-running" },
@@ -393,7 +397,6 @@
         // ==========================================
         async function initApp() {
             try {
-                // 依照 RULE 3 嚴格驗證認證優先權
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
                 } else {
@@ -402,7 +405,6 @@
 
                 myUid = auth.currentUser.uid;
                 
-                // 成功登入後啟用首頁操作
                 document.getElementById('btn-create-room').disabled = false;
                 document.getElementById('btn-join-room').disabled = false;
                 document.getElementById('lobby-msg').textContent = "";
@@ -458,7 +460,7 @@
         }
 
         // ==========================================
-        // 4. 建立 / 加入 / 離開大廳邏輯 (嚴格遵循 RULE 1 & RULE 2)
+        // 4. 建立 / 加入 / 離開大廳邏輯
         // ==========================================
         function showLobbyMsg(msg) {
             document.getElementById('lobby-msg').textContent = msg;
@@ -478,7 +480,6 @@
             currentRoomId = roomId;
             
             try {
-                // RULE 1 嚴格路徑：/artifacts/{appId}/public/data/rooms/{roomId}
                 const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomId);
                 await setDoc(roomRef, {
                     id: roomId,
@@ -490,7 +491,6 @@
                     startTime: 0
                 });
 
-                // RULE 1 嚴格路徑：/artifacts/{appId}/public/data/players/{docId}
                 const pRef = doc(db, 'artifacts', appId, 'public', 'data', 'players', `${roomId}_${myUid}`);
                 await setDoc(pRef, getInitialPlayer(myUid, roomId, playerName, false, 0));
 
@@ -522,10 +522,8 @@
                     const newPlayers = [...roomData.players, myUid];
                     const slotIndex = newPlayers.length - 1;
 
-                    // 更新房間的玩家名單
                     t.update(roomRef, { players: newPlayers });
 
-                    // 寫入自己的玩家數據
                     const playerRef = doc(db, 'artifacts', appId, 'public', 'data', 'players', `${roomId}_${myUid}`);
                     t.set(playerRef, getInitialPlayer(myUid, roomId, playerName, false, slotIndex));
                 });
@@ -550,7 +548,6 @@
                     const roomData = roomSnap.data();
                     const playersList = roomData.players.filter(uid => uid !== myUid);
 
-                    // 刪除本地玩家資料
                     const playerRef = doc(db, 'artifacts', appId, 'public', 'data', 'players', `${roomId}_${myUid}`);
                     t.delete(playerRef);
 
@@ -572,7 +569,7 @@
         }
 
         // ==========================================
-        // 5. 房主啟動遊戲並配置 AI 
+        // 5. 房主啟動遊戲並配置 AI
         // ==========================================
         async function startRoomGame() {
             if (!currentRoomId) return;
@@ -588,7 +585,6 @@
                     const aiNames = ["AI_飛馬", "AI_熊貓", "AI_獵豹"];
                     let aiCount = 1;
 
-                    // 補滿4人
                     while (finalPlayers.length < 4) {
                         const aiId = `ai_${aiCount}`;
                         finalPlayers.push(aiId);
@@ -598,7 +594,6 @@
                         aiCount++;
                     }
 
-                    // 初始化 48 塊地盤 (每人12塊)
                     for (let i = 0; i < 48; i++) {
                         const ownerIndex = Math.floor(i / 12);
                         const ownerId = finalPlayers[ownerIndex];
@@ -616,7 +611,6 @@
                         });
                     }
 
-                    // 設置狀態為正式開戰
                     t.update(roomRef, {
                         status: 'playing',
                         players: finalPlayers,
@@ -630,7 +624,7 @@
         }
 
         // ==========================================
-        // 6. 進入大廳與實時監聽 (RULE 2 記憶體篩選)
+        // 6. 進入大廳與實時監聽
         // ==========================================
         function enterWaitingLobby(roomId) {
             document.getElementById('lobby-screen').classList.add('hidden');
@@ -651,7 +645,6 @@
         }
 
         function setupListeners(roomId) {
-            // 監聽房間狀態
             unsubRoom = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomId), (docSnap) => {
                 if (!docSnap.exists()) return;
                 const rData = docSnap.data();
@@ -684,7 +677,6 @@
                 }
             });
 
-            // 監聽玩家 (單條件 query 以符合 RULE 2 避免複合索引報錯)
             const pQuery = query(collection(db, 'artifacts', appId, 'public', 'data', 'players'), where("roomId", "==", roomId));
             unsubPlayers = onSnapshot(pQuery, (snapshot) => {
                 const tempPlayers = {};
@@ -701,7 +693,6 @@
                 }
             });
 
-            // 監聽地塊
             const pltQuery = query(collection(db, 'artifacts', appId, 'public', 'data', 'plots'), where("roomId", "==", roomId));
             unsubPlots = onSnapshot(pltQuery, (snapshot) => {
                 snapshot.forEach(docSnap => {
@@ -718,7 +709,6 @@
             const listContainer = document.getElementById('waiting-players-list');
             listContainer.innerHTML = '';
             
-            // 篩選所有本房玩家並進行排序 (符合 RULE 2 的 JS 記憶體處理)
             const players = Object.values(localState.players)
                 .filter(p => p.roomId === currentRoomId)
                 .sort((a,b) => a.index - b.index);
@@ -783,7 +773,7 @@
             currentRoomId = null;
         }
 
-        // 核心計算：計算玩家名下地盤及跨國投資分流
+        // 核心計算
         async function gameTick() {
             if (!localState.room || localState.room.status !== 'playing' || !localState.players[myUid]) return;
 
@@ -798,22 +788,20 @@
                 const b = BUILDINGS.find(x => x.id === plot.buildingId);
                 if (!b) return;
 
-                const plotGdp = b.GDPPerTick + b.GDPGrowth * (plot.level - 1);
-                const plotEnv = b.envPerTick + b.envGrowth * (plot.level - 1);
-                const plotSoc = b.socPerTick + b.socGrowth * (plot.level - 1);
+                const plotGdp = Number(b.GDPPerTick || 0) + Number(b.GDPGrowth || 0) * (Number(plot.level || 1) - 1);
+                const plotEnv = Number(b.envPerTick || 0) + Number(b.envGrowth || 0) * (Number(plot.level || 1) - 1);
+                const plotSoc = Number(b.socPerTick || 0) + Number(b.socGrowth || 0) * (Number(plot.level || 1) - 1);
 
                 if (plot.ownerId === myUid) {
                     myPlots.push(plot); 
                     if (plot.builderId === myUid || !plot.builderId) {
                         deltaGdp += plotGdp; deltaEnv += plotEnv; deltaSoc += plotSoc;
                     } else {
-                        // 跨國企業抽成：地主獲得 30%
                         deltaGdp += Math.floor(plotGdp * 0.3);
                         deltaEnv += Math.floor(plotEnv * 0.3);
                         deltaSoc += Math.floor(plotSoc * 0.3);
                     }
                 } else if (plot.builderId === myUid) {
-                    // 跨國投資：我抽 70% 產出
                     deltaGdp += Math.floor(plotGdp * 0.7);
                     deltaEnv += Math.floor(plotEnv * 0.7);
                     deltaSoc += Math.floor(plotSoc * 0.7);
@@ -852,12 +840,12 @@
             if (localState.lastEnvRecord.length > 3) localState.lastEnvRecord.shift();
             if (localState.lastSocRecord.length > 3) localState.lastSocRecord.shift();
 
-            let newGdp = Math.max(0, me.gdp + deltaGdp);
-            let newEnv = Math.max(0, me.env + deltaEnv);
-            let newSoc = Math.max(0, me.soc + deltaSoc);
-            let newPop = me.pop + 10;
+            let newGdp = Math.max(0, Number(me.gdp || 0) + deltaGdp);
+            let newEnv = Math.max(0, Number(me.env || 0) + deltaEnv);
+            let newSoc = Math.max(0, Number(me.soc || 0) + deltaSoc);
+            let newPop = Number(me.pop || 0) + 10;
 
-            let rawScore = newGdp + (me.totalAssets * 0.6) + (newEnv * 1.5) + (newSoc * 1.5);
+            let rawScore = newGdp + (Number(me.totalAssets || 0) * 0.6) + (newEnv * 1.5) + (newSoc * 1.5);
             if (isDeclining) rawScore *= 0.5;
             let newScore = Math.floor(rawScore);
 
@@ -909,7 +897,7 @@
         }
 
         // ==========================================
-        // 8. 畫面渲染與動畫邏輯 (優雅 HUD & 精緻排名)
+        // 8. 畫面渲染與動畫邏輯 (✅ 頂部 HUD 高度與寬度完全自適應，不遮擋地塊)
         // ==========================================
         function updateHUD() {
             const container = document.getElementById('players-hud');
@@ -920,45 +908,45 @@
             sortedPlayers.forEach((p, index) => {
                 const isMe = p.uid === myUid;
                 const isView = p.uid === localState.viewingUid;
-                const sColor = STAGES[p.stage].color;
+                const sColor = STAGES[p.stage]?.color || "text-slate-400";
                 const isAlert = p.env <= 30 || p.soc <= 30;
 
-                // 精緻徽章配色
                 let rankBadge = '';
-                let borderGlow = 'border-slate-700';
+                let borderGlow = 'border-slate-800';
                 if (index === 0) {
-                    rankBadge = '<span class="bg-amber-500 text-slate-950 font-black px-2 py-0.5 rounded text-[10px] shadow-[0_0_8px_#f59e0b]">#1 金</span>';
-                    borderGlow = isView ? 'border-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.5)]' : 'border-amber-700';
+                    rankBadge = '<span class="bg-amber-500 text-slate-950 font-black px-1 md:px-2 py-0.5 rounded text-[8px] md:text-[10px] shadow-[0_0_8px_#f59e0b] shrink-0">#1 金</span>';
+                    borderGlow = isView ? 'border-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.5)]' : 'border-amber-700/60';
                 } else if (index === 1) {
-                    rankBadge = '<span class="bg-slate-300 text-slate-950 font-black px-2 py-0.5 rounded text-[10px] shadow-[0_0_8px_#cbd5e1]">#2 銀</span>';
-                    borderGlow = isView ? 'border-slate-300 shadow-[0_0_12px_rgba(203,213,225,0.4)]' : 'border-slate-600';
+                    rankBadge = '<span class="bg-slate-300 text-slate-950 font-black px-1 md:px-2 py-0.5 rounded text-[8px] md:text-[10px] shadow-[0_0_8px_#cbd5e1] shrink-0">#2 銀</span>';
+                    borderGlow = isView ? 'border-slate-300 shadow-[0_0_10px_rgba(203,213,225,0.4)]' : 'border-slate-700';
                 } else if (index === 2) {
-                    rankBadge = '<span class="bg-amber-750 text-slate-100 font-black px-2 py-0.5 rounded text-[10px] shadow-[0_0_8px_#b45309]" style="background-color: #b45309">#3 銅</span>';
-                    borderGlow = isView ? 'border-amber-600 shadow-[0_0_12px_rgba(180,83,9,0.3)]' : 'border-amber-900';
+                    rankBadge = '<span class="bg-amber-700 text-slate-100 font-black px-1 md:px-2 py-0.5 rounded text-[8px] md:text-[10px] shrink-0">#3 銅</span>';
+                    borderGlow = isView ? 'border-amber-600 shadow-[0_0_10px_rgba(180,83,9,0.3)]' : 'border-amber-900/60';
                 } else {
-                    rankBadge = `<span class="bg-slate-700 text-slate-300 font-black px-2 py-0.5 rounded text-[10px]">#4</span>`;
-                    borderGlow = isView ? 'border-sky-500 shadow-[0_0_10px_rgba(14,165,233,0.3)]' : 'border-slate-800';
+                    rankBadge = `<span class="bg-slate-700 text-slate-300 font-black px-1 md:px-2 py-0.5 rounded text-[8px] md:text-[10px] shrink-0">#4</span>`;
+                    borderGlow = isView ? 'border-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.3)]' : 'border-slate-800';
                 }
 
                 const div = document.createElement('div');
-                div.className = `min-w-[190px] p-2.5 rounded-xl cursor-pointer transition-all border-2 bg-slate-900 ${borderGlow} ${isAlert ? 'alert-flash' : ''}`;
+                // 減少 padding、調整字體大小，在大螢幕和行動裝置上都能極佳呈現
+                div.className = `p-1.5 md:p-2 rounded-lg cursor-pointer transition-all border bg-slate-950 flex flex-col justify-between ${borderGlow} ${isAlert ? 'alert-flash' : ''}`;
                 div.onclick = () => { localState.viewingUid = p.uid; renderGrid(); updateHUD(); renderRightPanel(); };
                 
                 div.innerHTML = `
-                    <div class="flex justify-between items-center mb-1.5">
-                        <span class="font-bold text-sm truncate max-w-[100px] ${isMe ? 'text-sky-300' : 'text-slate-300'}">
-                            ${p.name} ${isMe ? '(我)' : ''}
+                    <div class="flex justify-between items-center gap-1 min-w-0">
+                        <span class="font-bold text-[11px] md:text-sm truncate ${isMe ? 'text-sky-300' : 'text-slate-300'}">
+                            ${p.name}
                         </span>
                         ${rankBadge}
                     </div>
-                    <div class="flex justify-between items-end mb-1">
-                        <span class="text-[10px] font-bold ${sColor}">${STAGES[p.stage].name}</span>
-                        <span class="font-mono text-xs font-black text-white">發展度: ${p.score}</span>
+                    <div class="flex justify-between items-end my-0.5 md:my-1 text-[9px] md:text-xs">
+                        <span class="font-bold ${sColor} truncate">${STAGES[p.stage]?.name || "探索階段"}</span>
+                        <span class="font-mono text-slate-100 font-semibold truncate">分:${p.score}</span>
                     </div>
-                    <div class="flex gap-2 text-xs font-mono justify-between bg-slate-950/60 p-1.5 rounded-lg border border-slate-800/40">
-                        <span class="text-amber-400 font-bold"><i class="fa-solid fa-coins"></i> ${p.gdp}</span>
-                        <span class="${p.env<=30?'text-rose-400':'text-emerald-400'} font-bold"><i class="fa-solid fa-leaf"></i> ${p.env}</span>
-                        <span class="${p.soc<=30?'text-rose-400':'text-blue-400'} font-bold"><i class="fa-solid fa-hands-holding-circle"></i> ${p.soc}</span>
+                    <div class="flex gap-1 text-[9px] md:text-[11px] font-mono justify-between bg-slate-900/80 p-0.5 md:p-1 rounded border border-slate-800/50">
+                        <span class="text-amber-400"><i class="fa-solid fa-coins"></i> ${p.gdp}</span>
+                        <span class="${p.env<=30?'text-rose-400':'text-emerald-400'}"><i class="fa-solid fa-leaf"></i> ${p.env}</span>
+                        <span class="${p.soc<=30?'text-rose-400':'text-blue-400'}"><i class="fa-solid fa-hands-holding-circle"></i> ${p.soc}</span>
                     </div>
                 `;
                 container.appendChild(div);
@@ -982,10 +970,10 @@
             if (!ownerPlayer) return;
 
             document.getElementById('view-player-name').textContent = ownerPlayer.name;
-            document.getElementById('view-player-stage').textContent = STAGES[ownerPlayer.stage].name;
+            document.getElementById('view-player-stage').textContent = STAGES[ownerPlayer.stage]?.name || "探索階段";
             document.getElementById('btn-view-self').style.display = localState.viewingUid === myUid ? 'none' : 'block';
 
-            const stageSlots = STAGES[ownerPlayer.stage].slots;
+            const stageSlots = STAGES[ownerPlayer.stage]?.slots || 3;
             const playerIndex = ownerPlayer.index;
             const startIndex = playerIndex * 12;
 
@@ -1030,9 +1018,9 @@
                             <div class="absolute inset-0 bg-black/40 flex items-center justify-center font-bold text-white text-sm z-0">建造中...</div>
                         `;
                     } else {
-                        const g = b.GDPPerTick + b.GDPGrowth*(plot.level-1);
-                        const e = b.envPerTick + b.envGrowth*(plot.level-1);
-                        const s = b.socPerTick + b.socGrowth*(plot.level-1);
+                        const g = Number(b.GDPPerTick || 0) + Number(b.GDPGrowth || 0) * (Number(plot.level || 1) - 1);
+                        const e = Number(b.envPerTick || 0) + Number(b.envGrowth || 0) * (Number(plot.level || 1) - 1);
+                        const s = Number(b.socPerTick || 0) + Number(b.socGrowth || 0) * (Number(plot.level || 1) - 1);
                         content += `
                             <div class="flex gap-1 text-[10px] mt-1 z-10 font-mono bg-black/30 px-1 rounded">
                                 <span class="text-amber-400">${g}</span>
@@ -1310,7 +1298,6 @@
         window.upgradePlot = upgradePlot;
         window.evolvePlot = evolvePlot;
 
-        // 全域完工判定（包含房主代理完工，避免 AI 卡頓不操作）
         function renderLoop() {
             if (!localState.room || localState.room.status !== 'playing') {
                 animationFrameId = requestAnimationFrame(renderLoop);
@@ -1332,7 +1319,6 @@
                     const bar = document.getElementById(`prog-${plot.plotIndex}`);
                     if (bar) bar.style.width = `${percent}%`;
 
-                    // 完工：自己地塊自己寫，AI的地塊則由房主託管寫入 (極度關鍵！解決 AI 卡死問題)
                     const isMyOwnTask = plot.builderId === myUid;
                     const isAiTaskDelegatedToMe = !isMyOwnTask && isHost && String(plot.builderId).startsWith('ai_');
 
@@ -1364,7 +1350,7 @@
         }
 
         // ==========================================
-        // 10. 旅客系統與 AI 託管核心
+        // 10. 旅客系統與 AI 託管核心 (✅ 優化 AI 行為以防後期停止發展)
         // ==========================================
         async function dispatchTourists(targetUid) {
             if (targetUid === myUid) return;
@@ -1417,16 +1403,17 @@
                 const p = localState.players[uid];
                 if (!p.isAI) continue;
 
-                // AI 結算
+                // AI 資源產出與分數計算 
                 let deltaGdp = 0, deltaEnv = 0, deltaSoc = 0;
                 let aiPlots = [];
                 Object.values(localState.plots).forEach(plot => {
                     if (plot.status !== 'built') return;
                     const b = BUILDINGS.find(x => x.id === plot.buildingId);
                     if (!b) return;
-                    const plotGdp = b.GDPPerTick + b.GDPGrowth * (plot.level - 1);
-                    const plotEnv = b.envPerTick + b.envGrowth * (plot.level - 1);
-                    const plotSoc = b.socPerTick + b.socGrowth * (plot.level - 1);
+                    
+                    const plotGdp = Number(b.GDPPerTick || 0) + Number(b.GDPGrowth || 0) * (Number(plot.level || 1) - 1);
+                    const plotEnv = Number(b.envPerTick || 0) + Number(b.envGrowth || 0) * (Number(plot.level || 1) - 1);
+                    const plotSoc = Number(b.socPerTick || 0) + Number(b.socGrowth || 0) * (Number(plot.level || 1) - 1);
 
                     if (plot.ownerId === uid) {
                         aiPlots.push(plot);
@@ -1443,11 +1430,11 @@
                 let isDeclining = p.stage === 'Decline';
                 if (isDeclining) { deltaGdp = Math.floor(deltaGdp/2); deltaEnv = Math.floor(deltaEnv/2); deltaSoc = Math.floor(deltaSoc/2); }
                 
-                let newGdp = Math.max(0, p.gdp + deltaGdp);
-                let newEnv = Math.max(0, p.env + deltaEnv);
-                let newSoc = Math.max(0, p.soc + deltaSoc);
-                let newPop = p.pop + 8;
-                let rawScore = newGdp + (p.totalAssets * 0.6) + (newEnv * 1.5) + (newSoc * 1.5);
+                let newGdp = Math.max(0, Number(p.gdp || 0) + deltaGdp);
+                let newEnv = Math.max(0, Number(p.env || 0) + deltaEnv);
+                let newSoc = Math.max(0, Number(p.soc || 0) + deltaSoc);
+                let newPop = Number(p.pop || 0) + 8;
+                let rawScore = newGdp + (Number(p.totalAssets || 0) * 0.6) + (newEnv * 1.5) + (newSoc * 1.5);
                 if (isDeclining) rawScore *= 0.5;
                 let newScore = Math.floor(rawScore);
                 
@@ -1471,17 +1458,23 @@
                     });
                 } catch(e){}
 
-                // AI 行為決策
+                // ✅ 避免 AI 後期不發展，提升 AI 決策機率與可用性判定
                 const isBuilding = Object.values(localState.plots).some(pt => pt.builderId === uid && pt.status === 'building');
                 if (isBuilding) continue;
 
-                const stageSlots = STAGES[newStage].slots;
-                const availablePlots = Object.values(localState.plots).filter(pt => pt.ownerId === uid && pt.plotIndex < (p.index * 12 + stageSlots));
+                // 根據 AI 的最新發展階段，計算目前已解鎖的可用地塊數量
+                const stageSlots = STAGES[newStage]?.slots || 3;
+                
+                // 獲取該 AI 被允許開發的所有地塊 (確保 AI 後期晉升後，能獲得更多解鎖地塊開發權)
+                const availablePlots = Object.values(localState.plots)
+                    .filter(pt => pt.ownerId === uid && pt.plotIndex < (p.index * 12 + stageSlots));
+                    
                 const emptyPlots = availablePlots.filter(pt => pt.status === 'empty');
                 const builtPlots = availablePlots.filter(pt => pt.status === 'built' && pt.level < 5);
 
                 let actionTaken = false;
                 
+                // 策略 1：急救與維護 (升級增加 ENV / SOC 的建築)
                 if (builtPlots.length > 0 && (newEnv <= 35 || newSoc <= 35)) {
                     for (let pt of builtPlots) {
                         const b = BUILDINGS.find(x => x.id === pt.buildingId);
@@ -1495,19 +1488,39 @@
                     }
                 }
 
+                // 策略 2：解鎖新地塊開發 (後期主動開發新空格，杜絕後期不發展 Bug)
                 if (!actionTaken && emptyPlots.length > 0) {
                     const aiStageIdx = Object.keys(STAGES).indexOf(newStage);
+                    
+                    // 篩選所有可以解鎖的建築
                     const unlocked = BUILDINGS.filter(b => Object.keys(STAGES).indexOf(b.unlockStage) <= aiStageIdx && b.baseCost <= newGdp);
+                    
                     if (unlocked.length > 0) {
                         let choice = unlocked[Math.floor(Math.random() * unlocked.length)];
+                        
+                        // 環境與社會平衡
                         if (newEnv <= 35) {
                             const eco = unlocked.filter(b => b.envPerTick > 0);
-                            if (eco.length > 0) choice = eco[0];
+                            if (eco.length > 0) choice = eco[Math.floor(Math.random() * eco.length)];
                         } else if (newSoc <= 35) {
-                            const BarnesSoc = unlocked.filter(b => b.socPerTick > 0);
-                            if (BarnesSoc.length > 0) choice = BarnesSoc[0];
+                            const social = unlocked.filter(b => b.socPerTick > 0);
+                            if (social.length > 0) choice = social[Math.floor(Math.random() * social.length)];
                         }
-                        await startAiBuild(emptyPlots[0].plotIndex, uid, choice.id, choice.baseCost, choice.baseTime, 1);
+                        
+                        // 優先尋找最低編號的空格開發，逐步向前推進
+                        const targetPlot = emptyPlots[0];
+                        await startAiBuild(targetPlot.plotIndex, uid, choice.id, choice.baseCost, choice.baseTime, 1);
+                        actionTaken = true;
+                    }
+                }
+
+                // 策略 3：在沒有新空格的情況下，常規升級景點，提高後期總分
+                if (!actionTaken && builtPlots.length > 0 && Math.random() < 0.6) {
+                    const randomPlot = builtPlots[Math.floor(Math.random() * builtPlots.length)];
+                    const b = BUILDINGS.find(x => x.id === randomPlot.buildingId);
+                    const cost = Math.floor(b.baseCost * Math.pow(1.4, randomPlot.level));
+                    if (newGdp >= cost) {
+                        await startAiBuild(randomPlot.plotIndex, uid, null, cost, b.baseTime * (randomPlot.level+1), randomPlot.level+1);
                         actionTaken = true;
                     }
                 }
@@ -1610,7 +1623,7 @@
                             <div class="text-3xl font-black ${i===0 ? 'text-amber-400' : 'text-slate-500'}">#${i+1}</div>
                             <div>
                                 <div class="font-bold text-lg ${isMe ? 'text-sky-300' : 'text-white'}">${p.name}</div>
-                                <div class="text-xs text-slate-400">${STAGES[p.stage].name}</div>
+                                <div class="text-xs text-slate-400">${STAGES[p.stage]?.name || "探索階段"}</div>
                             </div>
                         </div>
                         <div class="text-right">
@@ -1636,7 +1649,6 @@
             document.getElementById('btn-start-game').onclick = startRoomGame;
             document.getElementById('btn-leave-waiting').onclick = leaveWaitingRoom;
             
-            // 規則說明折疊邏輯
             document.getElementById('btn-toggle-rules').onclick = () => {
                 const content = document.getElementById('rules-content');
                 const icon = document.getElementById('rules-icon');
