@@ -25,696 +25,1356 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #030712; }
-        .orbitron { font-family: 'Orbitron', sans-serif; }
-        .neon-border-blue { box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); border-color: rgba(59, 130, 246, 0.8); }
-        .neon-border-green { box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); border-color: rgba(16, 185, 129, 0.8); }
-        .neon-border-red { box-shadow: 0 0 15px rgba(239, 68, 68, 0.8); border-color: rgba(239, 68, 68, 1); animation: pulse-red 1.5s infinite alternate; }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #030712;
+        }
+        .orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        .neon-border-blue {
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+            border-color: rgba(59, 130, 246, 0.8);
+        }
+        .neon-border-green {
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+            border-color: rgba(16, 185, 129, 0.8);
+        }
+        .neon-border-red {
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.8);
+            border-color: rgba(239, 68, 68, 1);
+            animation: pulse-red 1.5s infinite alternate;
+        }
         @keyframes pulse-red {
             0% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.4); }
             100% { box-shadow: 0 0 20px rgba(239, 68, 68, 1); }
         }
-        #particle-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 50; }
-        .particle { position: absolute; pointer-events: none; border-radius: 50%; animation: fade-up 1s forwards ease-out; }
-        @keyframes fade-up {
-            0% { transform: translate(0, 0) scale(1); opacity: 1; }
-            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        #particle-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 50;
         }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #1e293b; }
-        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            border-radius: 50%;
+            animation: fade-up 1s forwards ease-out;
+        }
+        @keyframes fade-up {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
     </style>
 </head>
 <body class="text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
-<div id="particle-container"></div>
-<div id="toast" class="fixed top-24 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-3 rounded-full shadow-2xl text-white font-bold text-center z-50 pointer-events-none transition-all duration-500 opacity-0 scale-75"><span id="toast-text">通知訊息</span></div>
+    <div id="particle-container"></div>
 
-<!-- 聯網大廳與登入畫面 -->
-<div id="lobby-screen" class="fixed inset-0 bg-slate-950 flex flex-col items-center justify-center z-50 p-4 overflow-y-auto">
-    <div class="max-w-md w-full bg-slate-900/80 border border-slate-800 rounded-2xl p-8 shadow-2xl backdrop-blur-md relative overflow-hidden my-8">
-        <div class="absolute -top-12 -left-12 w-48 h-48 bg-blue-600/20 rounded-full blur-3xl"></div>
-        <div class="absolute -bottom-12 -right-12 w-48 h-48 bg-purple-600/20 rounded-full blur-3xl"></div>
-        <div class="text-center mb-8 relative">
-            <div class="text-blue-500 text-5xl mb-4"><i class="fa-solid fa-earth-americas"></i></div>
-            <h1 class="text-2xl md:text-3xl font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">旅遊城市發展</h1>
-            <p class="text-xs orbitron tracking-widest text-indigo-400 mt-2">4-PLAYER ONLINE MULTIPLAYER</p>
-            <div class="h-1 w-20 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mt-4 rounded-full"></div>
-        </div>
-        <div id="auth-step" class="space-y-6 relative">
-            <div><label class="block text-slate-400 text-sm font-medium mb-2">請輸入您的市長大名</label><input type="text" id="player-name-input" placeholder="例如：玩家A" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 text-slate-100 font-bold transition"></div>
-            <button id="login-btn" class="w-full py-4 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold tracking-wider shadow-lg active:scale-95 transition">進入聯網中心 <i class="fa-solid fa-arrow-right ml-1"></i></button>
-        </div>
-        <div id="room-step" class="space-y-4 relative hidden">
-            <div class="text-sm text-slate-300 mb-2">歡迎，市長 <span id="display-player-name" class="text-indigo-400 font-bold"></span>！</div>
-            <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800"><label class="block text-slate-400 text-xs mb-2">選擇遊戲時長 (僅房主創建適用)：</label><select id="game-mode-select" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-indigo-500 text-sm font-bold"><option value="300">5 分鐘 (極速對戰)</option><option value="900">15 分鐘 (標準發展)</option><option value="1800">30 分鐘 (史詩都會)</option></select></div>
-            <div class="grid grid-cols-2 gap-3"><button id="create-room-btn" class="py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-slate-950 font-black rounded-xl transition active:scale-95 text-sm">創建新房間</button><button id="join-room-direct-btn" class="py-3 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold rounded-xl transition border border-slate-700 active:scale-95 text-sm">加入已有房間</button></div>
-            <div id="join-room-input-container" class="hidden space-y-3 pt-3 border-t border-slate-800"><label class="block text-slate-400 text-xs">請輸入 6 位數房間代碼：</label><div class="flex flex-col sm:flex-row gap-2"><input type="text" id="room-code-input" placeholder="代碼" class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500 text-center tracking-widest text-slate-100 font-extrabold uppercase transition"><button id="submit-join-room-btn" class="px-5 py-3 sm:py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition shrink-0">加入</button></div></div>
-            <button id="back-to-auth-btn" class="mt-4 text-slate-500 text-xs hover:text-slate-300 w-full text-center py-2 transition">← 返回修改名字</button>
-        </div>
-        <div id="waiting-step" class="space-y-5 relative hidden">
-            <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800 text-center"><span class="text-xs text-slate-400 uppercase tracking-wider block">房間代碼 (<span id="waiting-mode-text" class="text-emerald-400"></span>)</span><span id="waiting-room-code" class="text-3xl font-black orbitron tracking-widest text-yellow-400">------</span><p class="text-xs text-slate-500 mt-2">請分享此代碼讓另外三位玩家加入遊戲</p></div>
-            <div><h3 class="text-slate-300 font-bold text-sm mb-2 flex justify-between"><span>目前市長列表：</span><span id="player-count-badge" class="text-indigo-400 font-bold">1/4</span></h3><div id="waiting-players-list" class="space-y-2 max-h-[150px] overflow-y-auto"></div></div>
-            <div id="host-controls" class="hidden"><button id="start-online-game-btn" class="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold tracking-wider shadow-lg animate-pulse">全員到齊！開啟實時大戰 <i class="fa-solid fa-play ml-1"></i></button></div>
-            <div id="non-host-message" class="text-xs text-slate-400 text-center animate-pulse italic">正在等待房主開啟遊戲大戰...</div>
-            <button id="leave-waiting-room-btn" class="mt-2 text-rose-500/80 hover:text-rose-400 text-xs w-full text-center py-2 transition">← 退出房間</button>
+    <div id="toast" class="fixed top-24 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-3 rounded-full shadow-2xl text-white font-bold text-center z-50 pointer-events-none transition-all duration-500 opacity-0 scale-75">
+        <span id="toast-text">通知訊息</span>
+    </div>
+
+    <!-- 聯網大廳與登入畫面 -->
+    <div id="lobby-screen" class="fixed inset-0 bg-slate-950 flex flex-col items-center justify-center z-50 p-4 overflow-y-auto">
+        <div class="max-w-md w-full bg-slate-900/80 border border-slate-800 rounded-2xl p-8 shadow-2xl backdrop-blur-md relative overflow-hidden my-8">
+            <div class="absolute -top-12 -left-12 w-48 h-48 bg-blue-600/20 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-12 -right-12 w-48 h-48 bg-purple-600/20 rounded-full blur-3xl"></div>
+            
+            <div class="text-center mb-8 relative">
+                <div class="text-blue-500 text-5xl mb-4"><i class="fa-solid fa-earth-americas animate-spin-slow"></i></div>
+                <h1 class="text-2xl md:text-3xl font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
+                    旅遊城市發展
+                </h1>
+                <p class="text-xs orbitron tracking-widest text-indigo-400 mt-2">4-PLAYER ONLINE MULTIPLAYER</p>
+                <div class="h-1 w-20 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <!-- 步驟一：輸入暱稱 -->
+            <div id="auth-step" class="space-y-6 relative">
+                <div>
+                    <label class="block text-slate-400 text-sm font-medium mb-2">請輸入您的市長大名</label>
+                    <input type="text" id="player-name-input" placeholder="例如：玩家A" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 text-slate-100 font-bold transition">
+                </div>
+                <button id="login-btn" class="w-full py-4 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold tracking-wider shadow-lg active:scale-95 transition">
+                    進入聯網中心 <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+
+            <!-- 步驟二：房間選擇 -->
+            <div id="room-step" class="space-y-4 relative hidden">
+                <div class="text-sm text-slate-300 mb-2">歡迎，市長 <span id="display-player-name" class="text-indigo-400 font-bold"></span>！</div>
+                
+                <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+                    <label class="block text-slate-400 text-xs mb-2">選擇遊戲時長 (僅房主創建適用)：</label>
+                    <select id="game-mode-select" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-indigo-500 text-sm font-bold">
+                        <option value="300">5 分鐘 (極速對戰)</option>
+                        <option value="900">15 分鐘 (標準發展)</option>
+                        <option value="1800">30 分鐘 (史詩都會)</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <button id="create-room-btn" class="py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-slate-950 font-black rounded-xl transition active:scale-95 text-sm">
+                        創建新房間
+                    </button>
+                    <button id="join-room-direct-btn" class="py-3 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold rounded-xl transition border border-slate-700 active:scale-95 text-sm">
+                        加入已有房間
+                    </button>
+                </div>
+
+                <div id="join-room-input-container" class="hidden space-y-3 pt-3 border-t border-slate-800">
+                    <label class="block text-slate-400 text-xs">請輸入 6 位數房間代碼：</label>
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <input type="text" id="room-code-input" placeholder="代碼" class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500 text-center tracking-widest text-slate-100 font-extrabold uppercase transition">
+                        <!-- shrink-0 解決手機版按鈕被壓縮不見的問題 -->
+                        <button id="submit-join-room-btn" class="px-5 py-3 sm:py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition shrink-0">
+                            加入
+                        </button>
+                    </div>
+                </div>
+
+                <button id="back-to-auth-btn" class="mt-4 text-slate-500 text-xs hover:text-slate-300 w-full text-center py-2 transition">
+                    ← 返回修改名字
+                </button>
+            </div>
+
+            <!-- 步驟三：等待室 -->
+            <div id="waiting-step" class="space-y-5 relative hidden">
+                <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800 text-center">
+                    <span class="text-xs text-slate-400 uppercase tracking-wider block">房間代碼 (<span id="waiting-mode-text" class="text-emerald-400"></span>)</span>
+                    <span id="waiting-room-code" class="text-3xl font-black orbitron tracking-widest text-yellow-400">------</span>
+                    <p class="text-xs text-slate-500 mt-2">請分享此代碼讓另外三位玩家加入遊戲</p>
+                </div>
+
+                <div>
+                    <h3 class="text-slate-300 font-bold text-sm mb-2 flex justify-between">
+                        <span>目前市長列表：</span>
+                        <span id="player-count-badge" class="text-indigo-400 font-bold">1/4</span>
+                    </h3>
+                    <div id="waiting-players-list" class="space-y-2 max-h-[150px] overflow-y-auto">
+                        <!-- 動態載入玩家 -->
+                    </div>
+                </div>
+
+                <div id="host-controls" class="hidden">
+                    <button id="start-online-game-btn" class="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold tracking-wider shadow-lg animate-pulse">
+                        全員到齊！開啟實時大戰 <i class="fa-solid fa-play ml-1"></i>
+                    </button>
+                </div>
+                <div id="non-host-message" class="text-xs text-slate-400 text-center animate-pulse italic">
+                    正在等待房主開啟遊戲大戰...
+                </div>
+
+                <button id="leave-waiting-room-btn" class="mt-2 text-rose-500/80 hover:text-rose-400 text-xs w-full text-center py-2 transition">
+                    ← 退出房間
+                </button>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- 遊戲主畫面 -->
-<div id="game-screen" class="hidden flex-1 flex flex-col">
-    <header class="bg-slate-900 border-b border-slate-800 px-4 py-3 sticky top-0 z-40"><div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4"><div class="flex items-center gap-3"><div class="text-indigo-400 text-2xl"><i class="fa-solid fa-earth-americas"></i></div><div><h1 class="font-bold text-lg leading-tight flex items-center">旅遊城市發展 <span class="text-[10px] bg-indigo-500/20 text-indigo-400 px-1.5 py-0.5 rounded font-black border border-indigo-500/30 ml-2 whitespace-nowrap">聯網版</span><span id="hud-mode-badge" class="text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded font-black border border-emerald-500/30 ml-1 whitespace-nowrap"></span></h1><span class="text-xs text-slate-400">房間：<span id="hud-room-code" class="font-bold text-yellow-400"></span></span></div></div><div class="flex items-center gap-4"><div class="bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 flex items-center gap-3"><i class="fa-regular fa-clock text-rose-500"></i><span id="timer-display" class="orbitron font-extrabold text-xl text-slate-100 tracking-widest">05:00</span></div></div></div></header>
-    <section class="bg-slate-950 border-b border-slate-900 p-4"><div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"><div id="player-cards-container" class="contents"></div></div></section>
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        <section class="lg:col-span-7 xl:col-span-8 flex flex-col gap-4">
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 relative">
-                <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-800"><div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span><h2 class="font-bold text-slate-200">目前視角：<span id="viewing-city-name" class="text-indigo-400">載入中...</span></h2></div><div class="text-xs text-slate-400">地塊解鎖進度：<span id="unlocked-plots-count" class="font-bold text-indigo-400">3/12</span> 格</div></div>
-                <div class="flex items-center gap-4 mb-4 text-xs bg-slate-950/60 border border-slate-800/80 rounded-xl p-3"><span class="font-bold text-slate-400">我方工程佇列 (上限 2)：</span><div class="flex flex-wrap gap-2 flex-1" id="queue-display"><span class="text-slate-500">（目前無工程進行中）</span></div></div>
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3" id="plots-grid"></div>
+    <!-- 遊戲主畫面 -->
+    <div id="game-screen" class="hidden flex-1 flex flex-col">
+        <!-- 頂部導航 -->
+        <header class="bg-slate-900 border-b border-slate-800 px-4 py-3 sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="text-indigo-400 text-2xl"><i class="fa-solid fa-earth-americas"></i></div>
+                    <div>
+                        <h1 class="font-bold text-lg leading-tight flex items-center">
+                            旅遊城市發展 
+                            <span class="text-[10px] bg-indigo-500/20 text-indigo-400 px-1.5 py-0.5 rounded font-black border border-indigo-500/30 ml-2 whitespace-nowrap">聯網版</span>
+                            <span id="hud-mode-badge" class="text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded font-black border border-emerald-500/30 ml-1 whitespace-nowrap"></span>
+                        </h1>
+                        <span class="text-xs text-slate-400">房間：<span id="hud-room-code" class="font-bold text-yellow-400"></span></span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div class="bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 flex items-center gap-3">
+                        <i class="fa-regular fa-clock text-rose-500"></i>
+                        <span id="timer-display" class="orbitron font-extrabold text-xl text-slate-100 tracking-widest">05:00</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 4位玩家卡片 -->
+        <section class="bg-slate-950 border-b border-slate-900 p-4">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div id="player-cards-container" class="contents"></div>
             </div>
         </section>
-        <section class="lg:col-span-5 xl:col-span-4 flex flex-col gap-6">
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5"><h3 class="font-bold text-slate-200 mb-3 flex items-center gap-2"><i class="fa-solid fa-plane-departure text-amber-500"></i> 旅客流量管理系統</h3><div class="bg-slate-950/80 rounded-xl p-4 border border-slate-800/50 space-y-3"><p class="text-xs text-slate-400">消耗我方 <strong class="text-amber-400"><span id="tourist-pop-cost">100</span> 人口 (POP)</strong>，派發旅客至對手城市。</p><div class="bg-slate-900 p-3 rounded-lg text-xs space-y-1 text-slate-300"><div class="flex justify-between"><span>對手獲取 MON：</span><span class="text-green-400 font-bold">建築總等級 × <span id="tourist-mon-earn">10</span></span></div><div class="flex justify-between"><span>對手承受代價：</span><span class="text-red-400 font-bold">ENV -<span id="tourist-env-dmg">6</span>, SOC -<span id="tourist-soc-dmg">6</span></span></div><div class="flex justify-between"><span>我方回扣佣金：</span><span class="text-amber-400 font-bold">對手獲取額之 30%</span></div></div><button id="dispatch-tourist-btn" class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-500 text-slate-950 font-extrabold rounded-lg shadow-lg active:scale-95 transition text-sm"><i class="fa-solid fa-share-nodes mr-1"></i> 派發旅客 (需查看對手)</button></div></div>
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5"><h3 class="font-bold text-slate-200 mb-3 flex items-center gap-2"><i class="fa-solid fa-award text-yellow-500"></i> 品牌組合加成</h3><div class="space-y-3 max-h-[300px] overflow-y-auto pr-1" id="synergies-list"></div></div>
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5"><h3 class="font-bold text-slate-200 mb-3 flex items-center gap-2"><i class="fa-solid fa-globe text-blue-400"></i> 跨國企業快捷面板</h3><div class="space-y-2 text-xs"><p class="text-slate-400">跨國允許：將商業、休閒巨頭輸出至對手地塊，為雙方創造收益。</p><div class="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-2" id="multinational-panel"></div></div></div>
-        </section>
-    </main>
-    <footer class="bg-slate-900 border-t border-slate-800 px-4 py-3 text-slate-400 text-xs"><div class="max-w-7xl mx-auto flex justify-between items-center"><div class="flex items-center gap-4"><button id="sound-toggle-btn" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-full transition"><i id="sound-icon" class="fa-solid fa-volume-high text-green-400"></i><span id="sound-text">音效已開啟</span></button></div><div>© 2026 旅遊城市發展 聯網對抗模擬器</div></div></footer>
-</div>
 
-<div id="build-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4"><div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 flex flex-col max-h-[85vh]"><div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-4"><div><h3 class="font-bold text-lg text-slate-200">在 <span id="modal-plot-name" class="text-indigo-400">地塊 #1</span> 上建造 / 投資</h3><p class="text-xs text-slate-400 mt-1">請選擇一項建築。跨國建造需於對手城市空地操作。</p></div><button id="close-modal-btn" class="text-slate-400 hover:text-slate-200 text-xl w-8 h-8 rounded-full hover:bg-slate-800 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button></div><div class="flex flex-wrap gap-2 mb-4" id="modal-tabs"></div><div class="flex-1 overflow-y-auto space-y-3 pr-1" id="modal-build-list"></div><div class="border-t border-slate-800 pt-4 mt-4 flex justify-end"><button id="cancel-build-btn" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm transition font-bold">取消</button></div></div></div>
+        <!-- 主體區域 -->
+        <main class="flex-1 max-w-7xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <!-- 左側地塊 -->
+            <section class="lg:col-span-7 xl:col-span-8 flex flex-col gap-4">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 relative">
+                    <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-800">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
+                            <h2 class="font-bold text-slate-200">
+                                目前視角：<span id="viewing-city-name" class="text-indigo-400">載入中...</span>
+                            </h2>
+                        </div>
+                        <div class="text-xs text-slate-400">
+                            地塊解鎖進度：<span id="unlocked-plots-count" class="font-bold text-indigo-400">3/12</span> 格
+                        </div>
+                    </div>
 
-<div id="results-modal" class="fixed inset-0 bg-slate-950/95 z-50 flex items-center justify-center hidden p-4"><div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-8 shadow-2xl relative overflow-hidden text-center"><div class="absolute -top-12 -left-12 w-48 h-48 bg-yellow-600/10 rounded-full blur-3xl"></div><div class="absolute -bottom-12 -right-12 w-48 h-48 bg-indigo-600/10 rounded-full blur-3xl"></div><div class="text-yellow-400 text-5xl mb-3"><i class="fa-solid fa-trophy"></i></div><h2 class="text-3xl font-black tracking-wider">聯網競賽終局結算</h2><p class="text-xs orbitron tracking-widest text-indigo-400 mb-6">FINAL SCOREBOARD</p><div class="space-y-4 mb-8" id="results-list-container"></div><button id="restart-game-btn" class="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-slate-950 font-black rounded-xl shadow-lg active:scale-95 transition tracking-widest text-base">回到大廳 <i class="fa-solid fa-house ml-1"></i></button></div></div>
+                    <div class="flex items-center gap-4 mb-4 text-xs bg-slate-950/60 border border-slate-800/80 rounded-xl p-3">
+                        <span class="font-bold text-slate-400">我方工程佇列 (上限 2)：</span>
+                        <div class="flex flex-wrap gap-2 flex-1" id="queue-display">
+                            <span class="text-slate-500">（目前無工程進行中）</span>
+                        </div>
+                    </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3" id="plots-grid"></div>
+                </div>
+            </section>
 
-const appId = 'tourism-city-online';
-let firebaseConfig = { apiKey: "", authDomain: "sandbox-placeholder.firebaseapp.com", projectId: "sandbox-placeholder", storageBucket: "sandbox-placeholder.appspot.com", messagingSenderId: "00000000", appId: "1:00000000:web:0000000" };
-let app, auth, db;
-let useFirebase = true;
-try { app = initializeApp(firebaseConfig); auth = getAuth(app); db = getFirestore(app); } catch(e) { useFirebase = false; }
+            <!-- 右側操作面板 -->
+            <section class="lg:col-span-5 xl:col-span-4 flex flex-col gap-6">
+                <!-- 旅客流量區 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+                    <h3 class="font-bold text-slate-200 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-plane-departure text-amber-500"></i> 旅客流量管理系統
+                    </h3>
+                    <div class="bg-slate-950/80 rounded-xl p-4 border border-slate-800/50 space-y-3">
+                        <p class="text-xs text-slate-400">
+                            消耗我方 <strong class="text-amber-400"><span id="tourist-pop-cost">100</span> 人口 (POP)</strong>，派發旅客至對手城市。
+                        </p>
+                        <div class="bg-slate-900 p-3 rounded-lg text-xs space-y-1 text-slate-300">
+                            <div class="flex justify-between">
+                                <span>對手獲取 MON：</span>
+                                <span class="text-green-400 font-bold">建築總等級 × <span id="tourist-mon-earn">10</span></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>對手承受代價：</span>
+                                <span class="text-red-400 font-bold">ENV -<span id="tourist-env-dmg">6</span>, SOC -<span id="tourist-soc-dmg">6</span></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>我方回扣佣金：</span>
+                                <span class="text-amber-400 font-bold">對手獲取額之 30%</span>
+                            </div>
+                        </div>
+                        <button id="dispatch-tourist-btn" class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-500 text-slate-950 font-extrabold rounded-lg shadow-lg active:scale-95 transition text-sm">
+                            <i class="fa-solid fa-share-nodes mr-1"></i> 派發旅客 (需查看對手)
+                        </button>
+                    </div>
+                </div>
 
-class SoundSynth {
-    constructor() { this.ctx = null; this.enabled = true; }
-    init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
-    toggle() { this.enabled = !this.enabled; return this.enabled; }
-    play(type, freqs, duration) { if (!this.enabled || !this.ctx) return; this.init(); const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain(); osc.type = type; osc.frequency.setValueAtTime(freqs[0], this.ctx.currentTime); if (freqs.length > 1) osc.frequency.exponentialRampToValueAtTime(freqs[1], this.ctx.currentTime + (duration * 0.8)); gain.gain.setValueAtTime(0.15, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration); osc.connect(gain); gain.connect(this.ctx.destination); osc.start(); osc.stop(this.ctx.currentTime + duration); }
-    playBuildStart() { this.play('triangle', [261.63, 392.00], 0.2); }
-    playBuildComplete() { this.play('sine', [329.63, 783.99], 0.35); }
-    playSynergy() { this.play('sawtooth', [523.25, 1046.50], 0.5); }
-    playTourist() { this.play('sine', [880.00, 220.00], 0.3); }
-    playBeep() { this.play('sine', [1000], 0.15); }
-}
-const synth = new SoundSynth();
+                <!-- 品牌組合加成區 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+                    <h3 class="font-bold text-slate-200 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-award text-yellow-500"></i> 品牌組合加成
+                    </h3>
+                    <div class="space-y-3 max-h-[300px] overflow-y-auto pr-1" id="synergies-list"></div>
+                </div>
 
-const BUILDINGS = [ { id:"local_market", name:"在地老街市集", shortName:"市集", category:"cultural", unlockStage:"Exploration", baseCost:20, baseTime:5, monPerTick:4, envPerTick:0, socPerTick:2, monGrowth:4, envGrowth:0, socGrowth:2, isForeignAllowed:false, icon:"fa-store" }, { id:"history_museum", name:"歷史文化博物館", shortName:"博物館", category:"cultural", unlockStage:"Involvement", baseCost:60, baseTime:10, monPerTick:8, envPerTick:0, socPerTick:6, monGrowth:6, envGrowth:0, socGrowth:5, isForeignAllowed:false, icon:"fa-landmark" }, { id:"heritage_park", name:"世界文化遺產公園", shortName:"遺產公園", category:"cultural", unlockStage:"Consolidation", baseCost:450, baseTime:20, monPerTick:40, envPerTick:5, socPerTick:25, monGrowth:30, envGrowth:4, socGrowth:20, isForeignAllowed:false, icon:"fa-archway" }, { id:"nature_trail", name:"自然生態步道", shortName:"步道", category:"natural", unlockStage:"Exploration", baseCost:15, baseTime:5, monPerTick:1, envPerTick:3, socPerTick:0, monGrowth:1, envGrowth:3, socGrowth:0, isForeignAllowed:false, icon:"fa-shoe-prints" }, { id:"forest_camp", name:"森林露營營地", shortName:"營地", category:"natural", unlockStage:"Involvement", baseCost:50, baseTime:10, monPerTick:6, envPerTick:6, socPerTick:-1, monGrowth:5, envGrowth:5, socGrowth:-1, isForeignAllowed:false, icon:"fa-campground" }, { id:"marine_reserve", name:"國家級海洋保育區", shortName:"海洋保育", category:"natural", unlockStage:"Development", baseCost:250, baseTime:15, monPerTick:10, envPerTick:20, socPerTick:2, monGrowth:8, envGrowth:18, socGrowth:2, isForeignAllowed:false, icon:"fa-fish-fins" }, { id:"youth_hostel", name:"特色青年民宿", shortName:"民宿", category:"leisure", unlockStage:"Involvement", baseCost:40, baseTime:10, monPerTick:8, envPerTick:-1, socPerTick:1, monGrowth:6, envGrowth:-1, socGrowth:1, isForeignAllowed:false, evolveTo:"star_hotel", icon:"fa-house-user" }, { id:"star_hotel", name:"星級度假酒店", shortName:"星級酒店", category:"leisure", unlockStage:"Involvement", baseCost:100, baseTime:10, monPerTick:24, envPerTick:-2, socPerTick:-1, monGrowth:18, envGrowth:-1, socGrowth:-1, isForeignAllowed:false, icon:"fa-hotel" }, { id:"water_park", name:"海洋主題水上樂園", shortName:"水上樂園", category:"leisure", unlockStage:"Development", baseCost:200, baseTime:15, monPerTick:45, envPerTick:-4, socPerTick:-2, monGrowth:35, envGrowth:-2, socGrowth:-2, isForeignAllowed:false, icon:"fa-umbrella-beach" }, { id:"shopping_mall", name:"大型免稅購物中心", shortName:"購物中心", category:"leisure", unlockStage:"Development", baseCost:350, baseTime:15, monPerTick:85, envPerTick:-6, socPerTick:-4, monGrowth:65, envGrowth:-3, socGrowth:-2, isForeignAllowed:true, icon:"fa-bag-shopping" }, { id:"marathon", name:"國際半程馬拉松", shortName:"馬拉松", category:"activities", unlockStage:"Involvement", baseCost:55, baseTime:10, monPerTick:12, envPerTick:-2, socPerTick:4, monGrowth:10, envGrowth:-1, socGrowth:3, isForeignAllowed:false, icon:"fa-person-running" }, { id:"beer_festival", name:"城市沙灘啤酒節", shortName:"啤酒節", category:"activities", unlockStage:"Development", baseCost:180, baseTime:15, monPerTick:48, envPerTick:-5, socPerTick:-2, monGrowth:38, envGrowth:-2, socGrowth:-1, isForeignAllowed:false, icon:"fa-beer-mug-empty" }, { id:"magic_show", name:"魔幻大馬戲劇場", shortName:"馬戲團", category:"entertainment", unlockStage:"Involvement", baseCost:75, baseTime:10, monPerTick:18, envPerTick:-3, socPerTick:-2, monGrowth:14, envGrowth:-1, socGrowth:-1, isForeignAllowed:false, icon:"fa-masks-theater" }, { id:"royal_casino", name:"紅利皇家歌舞賭場", shortName:"賭場", category:"entertainment", unlockStage:"Consolidation", baseCost:900, baseTime:25, monPerTick:250, envPerTick:-20, socPerTick:-20, monGrowth:200, envGrowth:-8, socGrowth:-8, isForeignAllowed:true, icon:"fa-clover" } ];
-const CATEGORY_STYLES = { cultural: { bg: "bg-amber-950/40 hover:bg-amber-900/30", border: "border-amber-800", text: "text-amber-400" }, natural: { bg: "bg-emerald-950/40 hover:bg-emerald-900/30", border: "border-emerald-800", text: "text-emerald-400" }, leisure: { bg: "bg-blue-950/40 hover:bg-blue-900/30", border: "border-blue-800", text: "text-blue-400" }, activities: { bg: "bg-purple-950/40 hover:bg-purple-900/30", border: "border-purple-800", text: "text-purple-400" }, entertainment: { bg: "bg-rose-950/40 hover:bg-rose-900/30", border: "border-rose-800", text: "text-rose-400" } };
-const SYNERGIES = [ { id: "syn_diverse", name: "活動選擇多元化", desc: "五種類別景點各建一個", reward: "+15 MON, +2 ENV, +2 SOC", check: (builtIds) => new Set(builtIds.map(id => BUILDINGS.find(x => x.id === id)?.category).filter(Boolean)).size === 5 }, { id: "syn_eco", name: "高品質自然組合", desc: "擁有 步道、營地 及 海洋保育區", reward: "+15 ENV", check: (builtIds) => ["nature_trail","forest_camp","marine_reserve"].every(id => builtIds.includes(id)) }, { id: "syn_culture", name: "真實性文化組合", desc: "擁有 老街市集、歷史博物館 及 遺產公園", reward: "+15 SOC", check: (builtIds) => ["local_market","history_museum","heritage_park"].every(id => builtIds.includes(id)) }, { id: "syn_activity", name: "獨特性活動組合", desc: "擁有 馬拉松 及 啤酒節", reward: "+18 MON, +2 SOC", check: (builtIds) => ["marathon","beer_festival"].every(id => builtIds.includes(id)) }, { id: "syn_leisure", name: "可達度消閒組合", desc: "特色民宿或星級酒店 + 水上樂園 + 購物中心", reward: "+25 MON, -2 ENV", check: (builtIds) => (builtIds.includes("youth_hostel")||builtIds.includes("star_hotel")) && builtIds.includes("water_park") && builtIds.includes("shopping_mall") } ];
-const STAGES = { Exploration: { name: "探索階段", limit: 3, score: 0 }, Involvement: { name: "投入階段", limit: 5, score: 250 }, Development: { name: "發展階段", limit: 8, score: 500 }, Consolidation: { name: "鞏固階段", limit: 12, score: 900 }, Stagnation: { name: "停滯階段", limit: 12, score: 1400 }, Decline: { name: "衰落階段", limit: 12, score: -1 } };
+                <!-- 跨國面板 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+                    <h3 class="font-bold text-slate-200 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-globe text-blue-400"></i> 跨國企業快捷面板
+                    </h3>
+                    <div class="space-y-2 text-xs">
+                        <p class="text-slate-400">跨國允許：將商業、休閒巨頭輸出至對手地塊，為雙方創造收益。</p>
+                        <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-2" id="multinational-panel"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
 
-let currentUserId = "local_guest";
-let currentUserDisplayName = "在地市長";
-let currentRoomId = null;
-let roomData = null;
-let isHost = false;
-let activeViewIndex = 0;
-let isLocalMode = false;
-let gameTimerInterval = null;
-let localProgressInterval = null;
-let localTickInterval = null;
-let unsubscribeRoom = null;
-let selectedPlotIndex = null;
-let gameTime = 0;
+        <footer class="bg-slate-900 border-t border-slate-800 px-4 py-3 text-slate-400 text-xs">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <button id="sound-toggle-btn" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-full transition">
+                        <i id="sound-icon" class="fa-solid fa-volume-high text-green-400"></i>
+                        <span id="sound-text">音效已開啟</span>
+                    </button>
+                </div>
+                <div>© 2026 旅遊城市發展 聯網對抗模擬器</div>
+            </div>
+        </footer>
+    </div>
 
-const getM = () => roomData && roomData.gameDuration ? roomData.gameDuration / 300 : 1;
+    <!-- 建造選單彈窗 -->
+    <div id="build-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 flex flex-col max-h-[85vh]">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+                <div>
+                    <h3 class="font-bold text-lg text-slate-200">
+                        在 <span id="modal-plot-name" class="text-indigo-400">地塊 #1</span> 上建造 / 投資
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">請選擇一項建築。跨國建造需於對手城市空地操作。</p>
+                </div>
+                <button id="close-modal-btn" class="text-slate-400 hover:text-slate-200 text-xl w-8 h-8 rounded-full hover:bg-slate-800 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="flex flex-wrap gap-2 mb-4" id="modal-tabs"></div>
+            <div class="flex-1 overflow-y-auto space-y-3 pr-1" id="modal-build-list"></div>
+            <div class="border-t border-slate-800 pt-4 mt-4 flex justify-end">
+                <button id="cancel-build-btn" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm transition font-bold">取消</button>
+            </div>
+        </div>
+    </div>
 
-async function initAuth() {
-    if (!useFirebase) { setupLocalMode(); return; }
-    try { await signInAnonymously(auth); } catch(e) { setupLocalMode(); }
-}
-function setupLocalMode() { isLocalMode = true; useFirebase = false; currentUserId = "local_me"; showNotification("已啟用本機單機模擬連線模式！", "yellow"); }
-if (useFirebase) onAuthStateChanged(auth, (user) => { if (user) currentUserId = user.uid; });
+    <!-- 結算彈窗 -->
+    <div id="results-modal" class="fixed inset-0 bg-slate-950/95 z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-8 shadow-2xl relative overflow-hidden text-center">
+            <div class="absolute -top-12 -left-12 w-48 h-48 bg-yellow-600/10 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-12 -right-12 w-48 h-48 bg-indigo-600/10 rounded-full blur-3xl"></div>
+            <div class="text-yellow-400 text-5xl mb-3"><i class="fa-solid fa-trophy"></i></div>
+            <h2 class="text-3xl font-black tracking-wider">聯網競賽終局結算</h2>
+            <p class="text-xs orbitron tracking-widest text-indigo-400 mb-6">FINAL SCOREBOARD</p>
+            <div class="space-y-4 mb-8" id="results-list-container"></div>
+            <button id="restart-game-btn" class="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-slate-950 font-black rounded-xl shadow-lg active:scale-95 transition tracking-widest text-base">
+                回到大廳 <i class="fa-solid fa-house ml-1"></i>
+            </button>
+        </div>
+    </div>
 
-document.getElementById("login-btn").addEventListener("click", async () => {
-    const name = document.getElementById("player-name-input").value.trim();
-    if (!name) { showNotification("請輸入市長名稱！", "red"); return; }
-    currentUserDisplayName = name;
-    await initAuth();
-    document.getElementById("auth-step").classList.add("hidden");
-    document.getElementById("room-step").classList.remove("hidden");
-    document.getElementById("display-player-name").textContent = name;
-});
-document.getElementById("back-to-auth-btn").addEventListener("click", () => { document.getElementById("room-step").classList.add("hidden"); document.getElementById("auth-step").classList.remove("hidden"); });
-document.getElementById("leave-waiting-room-btn").addEventListener("click", async () => {
-    if (unsubscribeRoom) unsubscribeRoom();
-    const uid = auth.currentUser?.uid || currentUserId;
-    if (useFirebase && currentRoomId && !isHost) {
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'tourism-city-online';
+        
+        let firebaseConfig = {};
         try {
-            const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
-            await runTransaction(db, async (transaction) => {
-                const sfDoc = await transaction.get(roomRef);
-                if (sfDoc.exists()) { let playersList = sfDoc.data().players.filter(p => p.id !== uid); transaction.update(roomRef, { players: playersList }); }
-            });
+            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                firebaseConfig = JSON.parse(__firebase_config);
+            } else {
+                firebaseConfig = {
+                    apiKey: "", authDomain: "sandbox-placeholder.firebaseapp.com",
+                    projectId: "sandbox-placeholder", storageBucket: "sandbox-placeholder.appspot.com",
+                    messagingSenderId: "00000000", appId: "1:00000000:web:0000000"
+                };
+            }
         } catch(e) {}
-    }
-    currentRoomId = null; document.getElementById("waiting-step").classList.add("hidden"); document.getElementById("room-step").classList.remove("hidden");
-});
 
-document.getElementById("create-room-btn").addEventListener("click", async () => {
-    try {
-        const uid = auth.currentUser?.uid || currentUserId;
-        const duration = parseInt(document.getElementById('game-mode-select').value);
-        const M = duration / 300;
-        const newRoomId = Math.floor(100000 + Math.random() * 900000).toString();
-        currentRoomId = newRoomId; isHost = true;
-        const makePlots = (ownerId) => Array.from({length:12}, () => ({ buildingId:null, level:0, ownerId:ownerId, progress:0, targetProgress:0, action:null, actionStartTime:0, isMultinational:false }));
-        const initialPlayers = [{ id: uid, name: currentUserDisplayName + " (您)", mon: 250*M, env:60, soc:60, pop:100*M, stage:"Exploration", totalSpent:0, totalScore:0, plots:makePlots(uid), activeSynergies:[], declineRecoveryTimer:0, joinedAt:Date.now() }];
-        if (isLocalMode) { const names=["東京市長 AI","倫敦市長 AI","紐約市長 AI"]; const ids=["local-ai-1","local-ai-2","local-ai-3"]; for(let i=0;i<3;i++) initialPlayers.push({ id:ids[i], name:names[i], mon:250*M, env:60, soc:60, pop:100*M, stage:"Exploration", totalSpent:0, totalScore:0, plots:makePlots(ids[i]), activeSynergies:[], declineRecoveryTimer:0, joinedAt:Date.now()+i+1 }); }
-        roomData = { status:"waiting", players:initialPlayers, timeLeft:duration, gameDuration:duration, createdAt:Date.now() };
-        if (useFirebase) { const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId); await setDoc(roomRef, roomData); }
-        enterWaitingRoom(); showNotification("房間創建成功！", "green");
-    } catch(err) { showNotification("創建房間失敗：" + err.message, "red"); }
-});
-document.getElementById("join-room-direct-btn").addEventListener("click", () => { if (isLocalMode) { showNotification("本機模式請直接點擊『創建房間』！","yellow"); return; } document.getElementById("join-room-input-container").classList.remove("hidden"); });
-document.getElementById("submit-join-room-btn").addEventListener("click", async () => {
-    const code = document.getElementById("room-code-input").value.trim();
-    if (!code || !useFirebase) return;
-    try {
-        const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', code);
-        const rSnap = await getDoc(roomRef);
-        if (!rSnap.exists()) { showNotification("找不到該房間！","red"); return; }
-        const data = rSnap.data();
-        if (data.status !== "waiting" || data.players.length >= 4) { showNotification("無法加入該房間！","red"); return; }
-        currentRoomId = code; isHost = false;
-        const uid = auth.currentUser?.uid || currentUserId;
-        const duration = data.gameDuration || 300; const M = duration/300;
-        const playerPlots = Array.from({length:12}, () => ({ buildingId:null, level:0, ownerId:uid, progress:0, targetProgress:0, action:null, actionStartTime:0, isMultinational:false }));
-        await runTransaction(db, async (transaction) => {
-            const sfDoc = await transaction.get(roomRef);
-            const playersList = sfDoc.data().players;
-            if (!playersList.some(p => p.id === uid)) { playersList.push({ id:uid, name:currentUserDisplayName, mon:250*M, env:60, soc:60, pop:100*M, stage:"Exploration", totalSpent:0, totalScore:0, plots:playerPlots, activeSynergies:[], declineRecoveryTimer:0, joinedAt:Date.now() }); transaction.update(roomRef, { players:playersList }); }
+        let app, auth, db;
+        let useFirebase = true;
+
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch (e) {
+            useFirebase = false;
+        }
+
+        class SoundSynth {
+            constructor() { this.ctx = null; this.enabled = true; }
+            init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+            toggle() { this.enabled = !this.enabled; return this.enabled; }
+            play(type, freqs, duration) {
+                if (!this.enabled || !this.ctx) return;
+                this.init();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freqs[0], this.ctx.currentTime);
+                if (freqs.length > 1) osc.frequency.exponentialRampToValueAtTime(freqs[1], this.ctx.currentTime + (duration * 0.8));
+                gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + duration);
+            }
+            playBuildStart() { this.play('triangle', [261.63, 392.00], 0.2); }
+            playBuildComplete() { this.play('sine', [329.63, 783.99], 0.35); }
+            playSynergy() { this.play('sawtooth', [523.25, 1046.50], 0.5); }
+            playTourist() { this.play('sine', [880.00, 220.00], 0.3); }
+            playBeep() { this.play('sine', [1000], 0.15); }
+        }
+        const synth = new SoundSynth();
+
+        const BUILDINGS = [
+            { id:"local_market", name:"在地老街市集", shortName:"市集", category:"cultural", unlockStage:"Exploration", baseCost:20, baseTime:5, monPerTick:4, envPerTick:0, socPerTick:2, monGrowth:4, envGrowth:0, socGrowth:2, isForeignAllowed:false, icon:"fa-store" },
+            { id:"history_museum", name:"歷史文化博物館", shortName:"博物館", category:"cultural", unlockStage:"Involvement", baseCost:60, baseTime:10, monPerTick:8, envPerTick:0, socPerTick:6, monGrowth:6, envGrowth:0, socGrowth:5, isForeignAllowed:false, icon:"fa-landmark" },
+            { id:"heritage_park", name:"世界文化遺產公園", shortName:"遺產公園", category:"cultural", unlockStage:"Consolidation", baseCost:450, baseTime:20, monPerTick:40, envPerTick:5, socPerTick:25, monGrowth:30, envGrowth:4, socGrowth:20, isForeignAllowed:false, icon:"fa-archway" },
+            { id:"nature_trail", name:"自然生態步道", shortName:"步道", category:"natural", unlockStage:"Exploration", baseCost:15, baseTime:5, monPerTick:1, envPerTick:3, socPerTick:0, monGrowth:1, envGrowth:3, socGrowth:0, isForeignAllowed:false, icon:"fa-shoe-prints" },
+            { id:"forest_camp", name:"森林露營營地", shortName:"營地", category:"natural", unlockStage:"Involvement", baseCost:50, baseTime:10, monPerTick:6, envPerTick:6, socPerTick:-1, monGrowth:5, envGrowth:5, socGrowth:-1, isForeignAllowed:false, icon:"fa-campground" },
+            { id:"marine_reserve", name:"國家級海洋保育區", shortName:"海洋保育", category:"natural", unlockStage:"Development", baseCost:250, baseTime:15, monPerTick:10, envPerTick:20, socPerTick:2, monGrowth:8, envGrowth:18, socGrowth:2, isForeignAllowed:false, icon:"fa-fish-fins" },
+            { id:"youth_hostel", name:"特色青年民宿", shortName:"民宿", category:"leisure", unlockStage:"Involvement", baseCost:40, baseTime:10, monPerTick:8, envPerTick:-1, socPerTick:1, monGrowth:6, envGrowth:-1, socGrowth:1, isForeignAllowed:false, evolveTo:"star_hotel", icon:"fa-house-user" },
+            { id:"star_hotel", name:"星級度假酒店", shortName:"星級酒店", category:"leisure", unlockStage:"Involvement", baseCost:100, baseTime:10, monPerTick:24, envPerTick:-2, socPerTick:-1, monGrowth:18, envGrowth:-1, socGrowth:-1, isForeignAllowed:false, icon:"fa-hotel" },
+            { id:"water_park", name:"海洋主題水上樂園", shortName:"水上樂園", category:"leisure", unlockStage:"Development", baseCost:200, baseTime:15, monPerTick:45, envPerTick:-4, socPerTick:-2, monGrowth:35, envGrowth:-2, socGrowth:-2, isForeignAllowed:false, icon:"fa-umbrella-beach" },
+            { id:"shopping_mall", name:"大型免稅購物中心", shortName:"購物中心", category:"leisure", unlockStage:"Development", baseCost:350, baseTime:15, monPerTick:85, envPerTick:-6, socPerTick:-4, monGrowth:65, envGrowth:-3, socGrowth:-2, isForeignAllowed:true, icon:"fa-bag-shopping" },
+            { id:"marathon", name:"國際半程馬拉松", shortName:"馬拉松", category:"activities", unlockStage:"Involvement", baseCost:55, baseTime:10, monPerTick:12, envPerTick:-2, socPerTick:4, monGrowth:10, envGrowth:-1, socGrowth:3, isForeignAllowed:false, icon:"fa-person-running" },
+            { id:"beer_festival", name:"城市沙灘啤酒節", shortName:"啤酒節", category:"activities", unlockStage:"Development", baseCost:180, baseTime:15, monPerTick:48, envPerTick:-5, socPerTick:-2, monGrowth:38, envGrowth:-2, socGrowth:-1, isForeignAllowed:false, icon:"fa-beer-mug-empty" },
+            { id:"magic_show", name:"魔幻大馬戲劇場", shortName:"馬戲團", category:"entertainment", unlockStage:"Involvement", baseCost:75, baseTime:10, monPerTick:18, envPerTick:-3, socPerTick:-2, monGrowth:14, envGrowth:-1, socGrowth:-1, isForeignAllowed:false, icon:"fa-masks-theater" },
+            { id:"royal_casino", name:"紅利皇家歌舞賭場", shortName:"賭場", category:"entertainment", unlockStage:"Consolidation", baseCost:900, baseTime:25, monPerTick:250, envPerTick:-20, socPerTick:-20, monGrowth:200, envGrowth:-8, socGrowth:-8, isForeignAllowed:true, icon:"fa-clover" }
+        ];
+
+        const CATEGORY_STYLES = {
+            cultural: { bg: "bg-amber-950/40 hover:bg-amber-900/30", border: "border-amber-800", text: "text-amber-400" },
+            natural: { bg: "bg-emerald-950/40 hover:bg-emerald-900/30", border: "border-emerald-800", text: "text-emerald-400" },
+            leisure: { bg: "bg-blue-950/40 hover:bg-blue-900/30", border: "border-blue-800", text: "text-blue-400" },
+            activities: { bg: "bg-purple-950/40 hover:bg-purple-900/30", border: "border-purple-800", text: "text-purple-400" },
+            entertainment: { bg: "bg-rose-950/40 hover:bg-rose-900/30", border: "border-rose-800", text: "text-rose-400" }
+        };
+
+        const SYNERGIES = [
+            {
+                id: "syn_diverse", name: "活動選擇多元化", desc: "五種類別景點各建一個", reward: "+15 MON, +2 ENV, +2 SOC",
+                check: (builtIds) => new Set(builtIds.map(id => BUILDINGS.find(x => x.id === id)?.category).filter(Boolean)).size === 5
+            },
+            {
+                id: "syn_eco", name: "高品質自然組合", desc: "擁有 步道、營地 及 海洋保育區", reward: "+15 ENV",
+                check: (builtIds) => ["nature_trail", "forest_camp", "marine_reserve"].every(id => builtIds.includes(id))
+            },
+            {
+                id: "syn_culture", name: "真實性文化組合", desc: "擁有 老街市集、歷史博物館 及 遺產公園", reward: "+15 SOC",
+                check: (builtIds) => ["local_market", "history_museum", "heritage_park"].every(id => builtIds.includes(id))
+            },
+            {
+                id: "syn_activity", name: "獨特性活動組合", desc: "擁有 馬拉松 及 啤酒節", reward: "+18 MON, +2 SOC",
+                check: (builtIds) => ["marathon", "beer_festival"].every(id => builtIds.includes(id))
+            },
+            {
+                id: "syn_leisure", name: "可達度消閒組合", desc: "特色民宿或星級酒店 + 水上樂園 + 購物中心", reward: "+25 MON, -2 ENV",
+                check: (builtIds) => (builtIds.includes("youth_hostel") || builtIds.includes("star_hotel")) && builtIds.includes("water_park") && builtIds.includes("shopping_mall")
+            }
+        ];
+
+        const STAGES = {
+            Exploration: { name: "探索階段", limit: 3, score: 0 },
+            Involvement: { name: "投入階段", limit: 5, score: 250 },
+            Development: { name: "發展階段", limit: 8, score: 500 },
+            Consolidation: { name: "鞏固階段", limit: 12, score: 900 },
+            Stagnation: { name: "停滯階段", limit: 12, score: 1400 },
+            Decline: { name: "衰落階段", limit: 12, score: -1 }
+        };
+
+        let currentUserId = "local-player-id";
+        let currentUserDisplayName = "在地市長";
+        let currentRoomId = null;
+        let roomData = null;
+        let isHost = false;
+        let activeViewIndex = 0;
+        let isLocalMode = false;
+
+        let gameTimerInterval = null;
+        let localProgressInterval = null;
+        let localTickInterval = null;
+        let unsubscribeRoom = null;
+        let selectedPlotIndex = null;
+
+        const getM = () => roomData && roomData.gameDuration ? roomData.gameDuration / 300 : 1;
+
+        const initAuth = async () => {
+            if (!useFirebase) { setupLocalMode(); return; }
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch(e) {
+                setupLocalMode();
+            }
+        };
+
+        function setupLocalMode() {
+            isLocalMode = true; useFirebase = false; currentUserId = "local-me";
+            showNotification("已啟用本機單機模擬連線模式！", "yellow");
+        }
+
+        if (useFirebase) {
+            onAuthStateChanged(auth, (user) => {
+                if (user) currentUserId = user.uid;
+            });
+        }
+
+        // 大廳登入
+        document.getElementById("login-btn").addEventListener("click", async () => {
+            const name = document.getElementById("player-name-input").value.trim();
+            if (!name) { showNotification("請輸入市長名稱！", "red"); return; }
+            currentUserDisplayName = name;
+            await initAuth();
+            document.getElementById("auth-step").classList.add("hidden");
+            document.getElementById("room-step").classList.remove("hidden");
+            document.getElementById("display-player-name").textContent = name;
         });
-        enterWaitingRoom();
-    } catch(err) { showNotification("加入房間失敗："+err.message,"red"); }
-});
 
-function enterWaitingRoom() {
-    document.getElementById("room-step").classList.add("hidden");
-    document.getElementById("waiting-step").classList.remove("hidden");
-    document.getElementById("waiting-room-code").textContent = currentRoomId;
-    if (isLocalMode) { updateWaitingUI(); return; }
-    const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
-    unsubscribeRoom = onSnapshot(roomRef, (docSnap) => {
-        if (!docSnap.exists()) return;
-        roomData = docSnap.data();
-        updateWaitingUI();
-        if (roomData.status === "playing") startClientGame();
-    }, (err) => { setupLocalMode(); updateWaitingUI(); });
-}
-function updateWaitingUI() {
-    const listContainer = document.getElementById("waiting-players-list");
-    listContainer.innerHTML = "";
-    document.getElementById("player-count-badge").textContent = `${roomData.players.length}/4`;
-    document.getElementById("waiting-mode-text").textContent = `${roomData.gameDuration/60}分鐘模式`;
-    roomData.players.forEach((p, idx) => {
-        const isMe = p.id === (auth.currentUser?.uid || currentUserId);
-        const el = document.createElement("div");
-        el.className = "flex items-center justify-between bg-slate-950 p-3 rounded-lg border border-slate-800 text-sm";
-        el.innerHTML = `<div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span class="font-bold ${isMe ? 'text-indigo-400' : 'text-slate-300'}">${p.name}</span></div><span class="text-xs text-slate-500">${idx === 0 ? '房主' : '已就位'}</span>`;
-        listContainer.appendChild(el);
-    });
-    if (isHost) { document.getElementById("host-controls").classList.remove("hidden"); document.getElementById("non-host-message").classList.add("hidden"); }
-    else { document.getElementById("host-controls").classList.add("hidden"); document.getElementById("non-host-message").classList.remove("hidden"); }
-}
-document.getElementById("start-online-game-btn").addEventListener("click", async () => {
-    if (!isHost) return;
-    roomData.status = "playing";
-    if (useFirebase && currentRoomId) {
-        try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId), { status: "playing" }); } catch(err) { showNotification("無法同步至雲端，但仍以本機模式開始","yellow"); }
-    }
-    startClientGame();
-});
-function startClientGame() {
-    document.getElementById("lobby-screen").classList.add("hidden");
-    document.getElementById("game-screen").classList.remove("hidden");
-    document.getElementById("hud-mode-badge").textContent = roomData.gameDuration===300?"極速(5m)":roomData.gameDuration===900?"標準(15m)":"史詩(30m)";
-    document.getElementById("hud-room-code").textContent = currentRoomId + (isLocalMode?" (模擬)":"");
-    synth.init();
-    const uid = auth.currentUser?.uid || currentUserId;
-    let idx = roomData.players.findIndex(p => p.id === uid);
-    if (idx === -1) idx = 0;
-    activeViewIndex = idx;
-    gameTime = roomData.timeLeft;
-    updateTimerUI();
-    startLocalGameLoop();
-    if (isHost) startHostClockTimer();
-    renderAll();
-}
-function startLocalGameLoop() {
-    if (localProgressInterval) clearInterval(localProgressInterval);
-    localProgressInterval = setInterval(() => {
-        let dirty = false;
-        const now = Date.now();
-        const uid = auth.currentUser?.uid || currentUserId;
-        roomData.players.forEach((p, pIdx) => {
-            p.plots.forEach((pl, plIdx) => {
-                if (pl.action !== null) {
-                    let newProg = Math.floor((now - pl.actionStartTime) / 1000);
-                    if (newProg < 0) newProg = 0;
-                    if (pl.progress !== newProg) { pl.progress = newProg; dirty = true; }
-                    if (pl.ownerId === uid && pl.progress >= pl.targetProgress) completeConstructionLocal(pIdx, plIdx);
+        // 退出與返回按鈕
+        document.getElementById("back-to-auth-btn").addEventListener("click", () => {
+            document.getElementById("room-step").classList.add("hidden");
+            document.getElementById("auth-step").classList.remove("hidden");
+        });
+
+        document.getElementById("leave-waiting-room-btn").addEventListener("click", async () => {
+            if (unsubscribeRoom) unsubscribeRoom();
+            const uid = auth.currentUser?.uid || currentUserId;
+            
+            if (useFirebase && currentRoomId && !isHost) {
+                try {
+                    const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
+                    await runTransaction(db, async (transaction) => {
+                        const sfDoc = await transaction.get(roomRef);
+                        if (sfDoc.exists()) {
+                            let playersList = sfDoc.data().players.filter(p => p.id !== uid);
+                            transaction.update(roomRef, { players: playersList });
+                        }
+                    });
+                } catch(e) {}
+            }
+            currentRoomId = null;
+            document.getElementById("waiting-step").classList.add("hidden");
+            document.getElementById("room-step").classList.remove("hidden");
+        });
+
+        // 創建房間
+        document.getElementById("create-room-btn").addEventListener("click", async () => {
+            try {
+                const uid = auth.currentUser?.uid || currentUserId;
+                const duration = parseInt(document.getElementById('game-mode-select').value);
+                const M = duration / 300;
+
+                const newRoomId = Math.floor(100000 + Math.random() * 900000).toString();
+                currentRoomId = newRoomId;
+                isHost = true;
+
+                const makePlots = (ownerId) => Array.from({length: 12}, () => ({
+                    buildingId: null, level: 0, ownerId: ownerId, progress: 0, targetProgress: 0, action: null,
+                    actionStartTime: 0, isMultinational: false
+                }));
+
+                const initialPlayers = [{
+                    id: uid, name: currentUserDisplayName + " (您)",
+                    mon: 250 * M, env: 60, soc: 60, pop: 100 * M, stage: "Exploration", totalSpent: 0, totalScore: 0,
+                    plots: makePlots(uid), activeSynergies: [], declineRecoveryTimer: 0, joinedAt: Date.now()
+                }];
+
+                if (isLocalMode) {
+                    const names = ["東京市長 AI", "倫敦市長 AI", "紐約市長 AI"];
+                    const ids = ["local-ai-1", "local-ai-2", "local-ai-3"];
+                    for(let i=0; i<3; i++) {
+                        initialPlayers.push({
+                            id: ids[i], name: names[i],
+                            mon: 250 * M, env: 60, soc: 60, pop: 100 * M, stage: "Exploration", totalSpent: 0, totalScore: 0,
+                            plots: makePlots(ids[i]), activeSynergies: [], declineRecoveryTimer: 0, joinedAt: Date.now() + i + 1
+                        });
+                    }
+                }
+
+                roomData = { status: "waiting", players: initialPlayers, timeLeft: duration, gameDuration: duration, createdAt: Date.now() };
+
+                if (useFirebase) {
+                    const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
+                    await setDoc(roomRef, roomData);
+                }
+
+                enterWaitingRoom();
+                showNotification("房間創建成功！", "green");
+            } catch (err) { showNotification("創建房間失敗：" + err.message, "red"); }
+        });
+
+        document.getElementById("join-room-direct-btn").addEventListener("click", () => {
+            if (isLocalMode) { showNotification("本機模式請直接點擊『創建房間』！", "yellow"); return; }
+            document.getElementById("join-room-input-container").classList.remove("hidden");
+        });
+
+        document.getElementById("submit-join-room-btn").addEventListener("click", async () => {
+            const code = document.getElementById("room-code-input").value.trim();
+            if (!code || !useFirebase) return;
+
+            try {
+                const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', code);
+                const rSnap = await getDoc(roomRef);
+                if (!rSnap.exists()) { showNotification("找不到該房間！", "red"); return; }
+
+                const data = rSnap.data();
+                if (data.status !== "waiting" || data.players.length >= 4) { showNotification("無法加入該房間！", "red"); return; }
+
+                currentRoomId = code; isHost = false;
+                const uid = auth.currentUser?.uid || currentUserId;
+                const duration = data.gameDuration || 300;
+                const M = duration / 300;
+
+                const playerPlots = Array.from({length: 12}, () => ({
+                    buildingId: null, level: 0, ownerId: uid, progress: 0, targetProgress: 0,
+                    action: null, actionStartTime: 0, isMultinational: false
+                }));
+
+                await runTransaction(db, async (transaction) => {
+                    const sfDoc = await transaction.get(roomRef);
+                    const playersList = sfDoc.data().players;
+                    if (!playersList.some(p => p.id === uid)) {
+                        playersList.push({
+                            id: uid, name: currentUserDisplayName, mon: 250 * M, env: 60, soc: 60, pop: 100 * M,
+                            stage: "Exploration", totalSpent: 0, totalScore: 0, plots: playerPlots, activeSynergies: [], declineRecoveryTimer: 0, joinedAt: Date.now()
+                        });
+                        transaction.update(roomRef, { players: playersList });
+                    }
+                });
+                enterWaitingRoom();
+            } catch (err) { showNotification("加入房間失敗：" + err.message, "red"); }
+        });
+
+        function enterWaitingRoom() {
+            document.getElementById("room-step").classList.add("hidden");
+            document.getElementById("waiting-step").classList.remove("hidden");
+            document.getElementById("waiting-room-code").textContent = currentRoomId;
+
+            if (isLocalMode) { updateWaitingUI(); return; }
+
+            const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
+            unsubscribeRoom = onSnapshot(roomRef, (docSnap) => {
+                if (!docSnap.exists()) return;
+                roomData = docSnap.data();
+                updateWaitingUI();
+                if (roomData.status === "playing") startClientGame();
+            }, (err) => {
+                setupLocalMode(); updateWaitingUI();
+            });
+        }
+
+        function updateWaitingUI() {
+            const listContainer = document.getElementById("waiting-players-list");
+            listContainer.innerHTML = "";
+            document.getElementById("player-count-badge").textContent = `${roomData.players.length}/4`;
+
+            const modeMinutes = roomData.gameDuration / 60;
+            document.getElementById("waiting-mode-text").textContent = `${modeMinutes}分鐘模式`;
+
+            roomData.players.forEach((p, idx) => {
+                const isMe = p.id === (auth.currentUser?.uid || currentUserId);
+                const el = document.createElement("div");
+                el.className = "flex items-center justify-between bg-slate-950 p-3 rounded-lg border border-slate-800 text-sm";
+                el.innerHTML = `<div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span class="font-bold ${isMe ? 'text-indigo-400' : 'text-slate-300'}">${p.name}</span></div><span class="text-xs text-slate-500">${idx === 0 ? '房主' : '已就位'}</span>`;
+                listContainer.appendChild(el);
+            });
+
+            if (isHost) {
+                document.getElementById("host-controls").classList.remove("hidden");
+                document.getElementById("non-host-message").classList.add("hidden");
+            } else {
+                document.getElementById("host-controls").classList.add("hidden");
+                document.getElementById("non-host-message").classList.remove("hidden");
+            }
+        }
+
+        document.getElementById("start-online-game-btn").addEventListener("click", async () => {
+            if (!isHost) return;
+            roomData.status = "playing";
+            if (useFirebase && currentRoomId) {
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId), { status: "playing" });
+            } else {
+                startClientGame();
+            }
+        });
+
+        function startClientGame() {
+            document.getElementById("lobby-screen").classList.add("hidden");
+            document.getElementById("game-screen").classList.remove("hidden");
+            
+            const mText = roomData.gameDuration === 300 ? "極速(5m)" : roomData.gameDuration === 900 ? "標準(15m)" : "史詩(30m)";
+            document.getElementById("hud-mode-badge").textContent = mText;
+            document.getElementById("hud-room-code").textContent = currentRoomId + (isLocalMode ? " (模擬)" : "");
+
+            synth.init();
+            const uid = auth.currentUser?.uid || currentUserId;
+            activeViewIndex = Math.max(0, roomData.players.findIndex(p => p.id === uid));
+
+            startLocalGameLoop();
+            if (isHost) startHostClockTimer();
+            renderAll();
+        }
+
+        function startLocalGameLoop() {
+            localProgressInterval = setInterval(() => {
+                let dirty = false;
+                const now = Date.now();
+                const uid = auth.currentUser?.uid || currentUserId;
+
+                roomData.players.forEach((p, pIdx) => {
+                    p.plots.forEach((pl, plIdx) => {
+                        if (pl.action !== null) {
+                            let newProg = Math.floor((now - pl.actionStartTime) / 1000);
+                            if (newProg < 0) newProg = 0;
+                            
+                            if (pl.progress !== newProg) {
+                                pl.progress = newProg;
+                                dirty = true;
+                            }
+                            
+                            // 只有地主端負責執行完工並上報 (確保同步不打架)
+                            if (pl.ownerId === uid && pl.progress >= pl.targetProgress) {
+                                completeConstructionLocal(pIdx, plIdx);
+                            }
+                        }
+                    });
+
+                    if (p.stage === "Decline" && p.env > 0 && p.soc > 0) {
+                        p.declineRecoveryTimer++;
+                        dirty = true;
+                    } else if (p.stage === "Decline") {
+                        p.declineRecoveryTimer = 0;
+                    }
+                });
+
+                if (isLocalMode && isHost) executeMockAITick();
+                if (dirty) { renderPlots(); renderQueue(); }
+            }, 500);
+
+            localTickInterval = setInterval(() => {
+                executeMyResourceTick();
+                if (isLocalMode && isHost) executeMockAIResources();
+            }, 5000);
+
+            if (useFirebase) {
+                unsubscribeRoom = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId), (snapshot) => {
+                    if (!snapshot.exists()) return;
+                    roomData = snapshot.data();
+                    gameTime = roomData.timeLeft;
+                    updateTimerUI();
+                    if (roomData.status === "finished") endOnlineGame();
+                    renderAll();
+                });
+            }
+        }
+
+        function startHostClockTimer() {
+            gameTimerInterval = setInterval(async () => {
+                if (roomData && roomData.timeLeft > 0) {
+                    roomData.timeLeft--; gameTime = roomData.timeLeft; updateTimerUI();
+                    if (useFirebase) await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId), { timeLeft: roomData.timeLeft });
+                } else {
+                    clearInterval(gameTimerInterval);
+                    roomData.status = "finished";
+                    if (useFirebase) await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId), { status: "finished" });
+                    else endOnlineGame();
+                }
+            }, 1000);
+        }
+
+        async function completeConstructionLocal(playerIndex, plotIndex) {
+            const p = roomData.players[playerIndex];
+            const plot = p.plots[plotIndex];
+            if (plot.action === null) return;
+
+            if (plot.action === "build") plot.level = 1;
+            else if (plot.action === "upgrade") plot.level += 1;
+            else if (plot.action === "evolve") { plot.buildingId = "star_hotel"; plot.level = 1; }
+
+            plot.progress = 0; plot.targetProgress = 0; plot.action = null;
+
+            if (plot.ownerId === (auth.currentUser?.uid || currentUserId)) {
+                synth.playBuildComplete(); showNotification(`您投資的項目已建造/升級完成！`, "green");
+            }
+            await uploadPlayerState(playerIndex);
+        }
+
+        async function uploadPlayerState(playerIdx) {
+            recalculateScoresAndStages(roomData.players);
+            if (!useFirebase) { renderAll(); return; }
+            try {
+                const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
+                await runTransaction(db, async (transaction) => {
+                    const sfDoc = await transaction.get(roomRef);
+                    const playersList = sfDoc.data().players;
+                    playersList[playerIdx] = roomData.players[playerIdx];
+                    recalculateScoresAndStages(playersList);
+                    transaction.update(roomRef, { players: playersList });
+                });
+            } catch (err) {}
+        }
+
+        function recalculateScoresAndStages(playersList) {
+            const M = getM();
+            playersList.forEach(p => {
+                let score = p.mon + (p.totalSpent * 0.6) + (p.env * 1.5) + (p.soc * 1.5);
+                let newStage = "Exploration";
+                if (p.env <= 0 || p.soc <= 0) { newStage = "Decline"; score *= 0.5; }
+                else if (score >= STAGES.Stagnation.score * M) newStage = "Stagnation";
+                else if (score >= STAGES.Consolidation.score * M) newStage = "Consolidation";
+                else if (score >= STAGES.Development.score * M) newStage = "Development";
+                else if (score >= STAGES.Involvement.score * M) newStage = "Involvement";
+
+                p.stage = newStage; p.totalScore = Math.floor(score);
+            });
+            let temp = playersList.map((p, idx) => ({ idx, score: p.totalScore })).sort((a, b) => b.score - a.score);
+            temp.forEach((item, rankIdx) => playersList[item.idx].rank = rankIdx + 1);
+        }
+
+        async function executeMyResourceTick() {
+            const uid = auth.currentUser?.uid || currentUserId;
+            const myIdx = roomData.players.findIndex(p => p.id === uid);
+            if (myIdx === -1) return;
+            
+            const M = getM();
+            const p = roomData.players[myIdx];
+            p.pop += 10;
+            let tickMon = 0, tickEnv = 0, tickSoc = 0;
+
+            p.plots.forEach(plot => {
+                if (plot.buildingId && plot.action === null) {
+                    const b = BUILDINGS.find(x => x.id === plot.buildingId);
+                    if (b) {
+                        let mon = b.monPerTick + (plot.level - 1) * b.monGrowth;
+                        let env = b.envPerTick + (plot.level - 1) * b.envGrowth;
+                        let soc = b.socPerTick + (plot.level - 1) * b.socGrowth;
+                        if (plot.isMultinational) { tickMon += Math.round(mon * 0.3); tickEnv += env; tickSoc += soc; }
+                        else { tickMon += mon; tickEnv += env; tickSoc += soc; }
+                    }
                 }
             });
-            if (p.stage === "Decline" && p.env > 0 && p.soc > 0) { p.declineRecoveryTimer++; dirty = true; } else if (p.stage === "Decline") p.declineRecoveryTimer = 0;
-        });
-        if (isLocalMode && isHost) executeMockAITick();
-        if (dirty) { renderPlots(); renderQueue(); }
-    }, 500);
-    if (localTickInterval) clearInterval(localTickInterval);
-    localTickInterval = setInterval(() => { executeMyResourceTick(); if (isLocalMode && isHost) executeMockAIResources(); }, 5000);
-    if (useFirebase) {
-        if (unsubscribeRoom) unsubscribeRoom();
-        unsubscribeRoom = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId), (snapshot) => {
-            if (!snapshot.exists()) return;
-            roomData = snapshot.data();
-            gameTime = roomData.timeLeft;
-            updateTimerUI();
-            if (roomData.status === "finished") endOnlineGame();
+
+            roomData.players.forEach((otherP, otherIdx) => {
+                if (otherIdx !== myIdx) {
+                    otherP.plots.forEach(plot => {
+                        if (plot.isMultinational && plot.ownerId === uid && plot.action === null) {
+                            const b = BUILDINGS.find(x => x.id === plot.buildingId);
+                            if (b) tickMon += Math.ceil((b.monPerTick + (plot.level - 1) * b.monGrowth) * 0.7);
+                        }
+                    });
+                }
+            });
+
+            if (p.stage === "Decline") { tickMon = Math.round(tickMon * 0.5); tickEnv = Math.round(tickEnv * 0.5); tickSoc = Math.round(tickSoc * 0.5); }
+            p.mon += tickMon; p.env = Math.max(0, p.env + tickEnv); p.soc = Math.max(0, p.soc + tickSoc);
+
+            const builtIds = p.plots.filter(pl => pl.buildingId && pl.action === null).map(pl => pl.buildingId);
+            SYNERGIES.forEach(synergy => {
+                if (synergy.check(builtIds)) {
+                    if (synergy.id === "syn_diverse") { p.mon += 15; p.env += 2; p.soc += 2; }
+                    else if (synergy.id === "syn_eco") p.env += 15;
+                    else if (synergy.id === "syn_culture") p.soc += 15;
+                    else if (synergy.id === "syn_activity") { p.mon += 18; p.soc += 2; }
+                    else if (synergy.id === "syn_leisure") { p.mon += 25; p.env -= 2; }
+
+                    if (!p.activeSynergies.includes(synergy.id)) {
+                        p.activeSynergies.push(synergy.id);
+                        showNotification(`品牌組合啟動：【${synergy.name}】！獲得額外加成！`, "yellow");
+                        synth.playSynergy(); spawnParticles(window.innerWidth / 2, window.innerHeight / 2, "#fbbf24");
+                    }
+                }
+            });
+
+            if (p.stage === "Decline" && p.env > 0 && p.soc > 0 && p.declineRecoveryTimer >= 15 * M) {
+                p.declineRecoveryTimer = 0; p.stage = "Exploration"; showNotification(`環境改善，成功脫離衰落！`, "green");
+            }
+            await uploadPlayerState(myIdx);
+        }
+
+        function executeMockAIResources() {
+            const uid = auth.currentUser?.uid || currentUserId;
+            roomData.players.forEach((p) => {
+                if (p.id === uid) return;
+                p.pop += 8;
+                let tickMon = 0, tickEnv = 0, tickSoc = 0;
+                p.plots.forEach(plot => {
+                    if (plot.buildingId && plot.action === null) {
+                        const b = BUILDINGS.find(x => x.id === plot.buildingId);
+                        if (b) {
+                            let mon = b.monPerTick + (plot.level - 1) * b.monGrowth;
+                            let env = b.envPerTick + (plot.level - 1) * b.envGrowth;
+                            let soc = b.socPerTick + (plot.level - 1) * b.socGrowth;
+                            if (plot.isMultinational) { tickMon += Math.round(mon * 0.3); tickEnv += env; tickSoc += soc; }
+                            else { tickMon += mon; tickEnv += env; tickSoc += soc; }
+                        }
+                    }
+                });
+                if (p.stage === "Decline") { tickMon = Math.round(tickMon * 0.5); tickEnv = Math.round(tickEnv * 0.5); tickSoc = Math.round(tickSoc * 0.5); }
+                p.mon += tickMon; p.env = Math.max(0, p.env + tickEnv); p.soc = Math.max(0, p.soc + tickSoc);
+            });
+            recalculateScoresAndStages(roomData.players);
             renderAll();
-        });
-    }
-}
-function startHostClockTimer() {
-    if (gameTimerInterval) clearInterval(gameTimerInterval);
-    gameTimerInterval = setInterval(async () => {
-        if (roomData && roomData.timeLeft > 0) {
-            roomData.timeLeft--; gameTime = roomData.timeLeft; updateTimerUI();
-            if (useFirebase) { try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId), { timeLeft: roomData.timeLeft }); } catch(e) {} }
-        } else {
-            clearInterval(gameTimerInterval);
-            roomData.status = "finished";
-            if (useFirebase) { try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId), { status: "finished" }); } catch(e) {} }
-            endOnlineGame();
         }
-    }, 1000);
-}
-async function completeConstructionLocal(playerIndex, plotIndex) {
-    const p = roomData.players[playerIndex];
-    const plot = p.plots[plotIndex];
-    if (plot.action === null) return;
-    if (plot.action === "build") plot.level = 1;
-    else if (plot.action === "upgrade") plot.level += 1;
-    else if (plot.action === "evolve") { plot.buildingId = "star_hotel"; plot.level = 1; }
-    plot.progress = 0; plot.targetProgress = 0; plot.action = null;
-    if (plot.ownerId === (auth.currentUser?.uid || currentUserId)) { synth.playBuildComplete(); showNotification(`您投資的項目已建造/升級完成！`, "green"); }
-    await uploadPlayerState(playerIndex);
-}
-async function uploadPlayerState(playerIdx) {
-    recalculateScoresAndStages(roomData.players);
-    if (!useFirebase) { renderAll(); return; }
-    try {
-        const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
-        await runTransaction(db, async (transaction) => {
-            const sfDoc = await transaction.get(roomRef);
-            const playersList = sfDoc.data().players;
-            playersList[playerIdx] = roomData.players[playerIdx];
-            recalculateScoresAndStages(playersList);
-            transaction.update(roomRef, { players: playersList });
-        });
-    } catch(err) {}
-}
-function recalculateScoresAndStages(playersList) {
-    const M = getM();
-    playersList.forEach(p => {
-        let score = p.mon + (p.totalSpent * 0.6) + (p.env * 1.5) + (p.soc * 1.5);
-        let newStage = "Exploration";
-        if (p.env <= 0 || p.soc <= 0) { newStage = "Decline"; score *= 0.5; }
-        else if (score >= STAGES.Stagnation.score * M) newStage = "Stagnation";
-        else if (score >= STAGES.Consolidation.score * M) newStage = "Consolidation";
-        else if (score >= STAGES.Development.score * M) newStage = "Development";
-        else if (score >= STAGES.Involvement.score * M) newStage = "Involvement";
-        p.stage = newStage; p.totalScore = Math.floor(score);
-    });
-    let temp = playersList.map((p, idx) => ({ idx, score: p.totalScore })).sort((a,b) => b.score - a.score);
-    temp.forEach((item, rankIdx) => playersList[item.idx].rank = rankIdx + 1);
-}
-async function executeMyResourceTick() {
-    const uid = auth.currentUser?.uid || currentUserId;
-    const myIdx = roomData.players.findIndex(p => p.id === uid);
-    if (myIdx === -1) return;
-    const M = getM();
-    const p = roomData.players[myIdx];
-    p.pop += 10;
-    let tickMon = 0, tickEnv = 0, tickSoc = 0;
-    p.plots.forEach(plot => {
-        if (plot.buildingId && plot.action === null) {
+
+        function executeMockAITick() {
+            const uid = auth.currentUser?.uid || currentUserId;
+            const M = getM();
+            roomData.players.forEach((p) => {
+                if (p.id === uid || p.plots.some(pl => pl.action !== null) || Math.random() > 0.25) return;
+                const limit = getStageLimit(p.stage);
+                const emptyIdxs = [], builtPlots = [];
+                for(let i=0; i<limit; i++) {
+                    if (!p.plots[i].buildingId && p.plots[i].action === null) emptyIdxs.push(i);
+                    else if (p.plots[i].buildingId && p.plots[i].action === null) builtPlots.push(i);
+                }
+                if (builtPlots.length > 0 && Math.random() > 0.5) {
+                    const plot = p.plots[builtPlots[Math.floor(Math.random() * builtPlots.length)]];
+                    if (plot.level < 5) {
+                        const b = BUILDINGS.find(x => x.id === plot.buildingId);
+                        const cost = getUpgradeCost(b.baseCost * M, plot.level);
+                        if (p.mon >= cost) {
+                            p.mon -= cost; p.totalSpent += cost;
+                            plot.actionStartTime = Date.now();
+                            plot.targetProgress = getUpgradeTime(b.baseTime * M, plot.level + 1);
+                            plot.action = "upgrade";
+                        }
+                    }
+                } else if (emptyIdxs.length > 0) {
+                    const plotIdx = emptyIdxs[0];
+                    const targetB = BUILDINGS.filter(b => b.unlockStage === "Exploration" || b.unlockStage === "Involvement")[Math.floor(Math.random() * 2)];
+                    if (p.mon >= targetB.baseCost * M) {
+                        p.mon -= targetB.baseCost * M; p.totalSpent += targetB.baseCost * M;
+                        p.plots[plotIdx] = { buildingId: targetB.id, level: 0, ownerId: p.id, progress: 0, targetProgress: targetB.baseTime * M, actionStartTime: Date.now(), action: "build", isMultinational: false };
+                    }
+                }
+            });
+        }
+
+        window.openBuildModal = function(plotIndex) {
+            selectedPlotIndex = plotIndex;
+            document.getElementById("modal-plot-name").textContent = `地塊 #${plotIndex + 1}`;
+            renderModalTabs(); filterModalBuildList("all");
+            document.getElementById("build-modal").classList.remove("hidden");
+        }
+
+        function renderModalTabs() {
+            const container = document.getElementById("modal-tabs");
+            container.innerHTML = "";
+            const tabs = [ { id: "all", label: "全部" }, { id: "cultural", label: "文化" }, { id: "natural", label: "自然" }, { id: "leisure", label: "消閒" }, { id: "activities", label: "活動" }, { id: "entertainment", label: "娛樂" }, { id: "foreign", label: "可跨國" } ];
+            tabs.forEach(t => {
+                const btn = document.createElement("button");
+                btn.className = `tab-btn px-3 py-1.5 rounded-lg text-xs font-bold transition ${t.id === "all" ? "bg-indigo-600 text-white" : "bg-slate-800 text-slate-300 hover:bg-slate-700"}`;
+                btn.textContent = t.label;
+                btn.addEventListener("click", () => {
+                    container.querySelectorAll(".tab-btn").forEach(b => { b.classList.remove("bg-indigo-600", "text-white"); b.classList.add("bg-slate-800", "text-slate-300", "hover:bg-slate-700"); });
+                    btn.classList.add("bg-indigo-600", "text-white"); btn.classList.remove("bg-slate-800", "text-slate-300", "hover:bg-slate-700");
+                    filterModalBuildList(t.id);
+                });
+                container.appendChild(btn);
+            });
+        }
+
+        function filterModalBuildList(tabId) {
+            const listContainer = document.getElementById("modal-build-list");
+            listContainer.innerHTML = "";
+            const uid = auth.currentUser?.uid || currentUserId;
+            const targetPlayer = roomData.players[activeViewIndex];
+            const me = roomData.players.find(p => p.id === uid);
+            const isForeign = targetPlayer.id !== uid;
+            const M = getM();
+            
+            const foreignUnlocked = me.stage === "Consolidation" || me.stage === "Stagnation";
+            const stageOrder = ["Exploration", "Involvement", "Development", "Consolidation", "Stagnation"];
+            const meStageIdx = stageOrder.indexOf(me.stage === "Decline" ? "Exploration" : me.stage);
+
+            let activeTasks = 0;
+            roomData.players.forEach(p => p.plots.forEach(pl => { if (pl.ownerId === uid && pl.action !== null) activeTasks++; }));
+            const canBuildQueue = activeTasks < 2;
+
+            // 智能排序功能：全部清單中，能蓋的擺最上面
+            let renderList = [...BUILDINGS];
+            if (tabId === "all") {
+                renderList.sort((a, b) => {
+                    const getScore = (item) => {
+                        if (meStageIdx < stageOrder.indexOf(item.unlockStage)) return 1; // 鎖定
+                        if (me.mon < (item.baseCost * M) || !canBuildQueue || (isForeign && (!foreignUnlocked || !item.isForeignAllowed))) return 2; // 能解鎖但無法蓋
+                        return 3; // 可以立即蓋
+                    };
+                    return getScore(b) - getScore(a);
+                });
+            }
+
+            renderList.forEach(b => {
+                if (tabId !== "all" && tabId === "foreign" && !b.isForeignAllowed) return;
+                if (tabId !== "all" && tabId !== "foreign" && b.category !== tabId) return;
+
+                const isStageUnlocked = meStageIdx >= stageOrder.indexOf(b.unlockStage);
+                const blockForeign = isForeign && (!foreignUnlocked || !b.isForeignAllowed);
+                const cost = b.baseCost * M;
+                const time = b.baseTime * M;
+                const canAfford = me.mon >= cost;
+
+                const card = document.createElement("div");
+                card.className = `flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border transition ${CATEGORY_STYLES[b.category].border} ${CATEGORY_STYLES[b.category].bg}`;
+                
+                let yields = [];
+                if (b.monPerTick !== 0) yields.push(`<span class="text-amber-400 font-bold">MON +${b.monPerTick}</span>`);
+                if (b.envPerTick !== 0) yields.push(`<span class="${b.envPerTick > 0 ? 'text-emerald-400' : 'text-rose-400'}">ENV ${b.envPerTick > 0 ? '+' : ''}${b.envPerTick}</span>`);
+                if (b.socPerTick !== 0) yields.push(`<span class="${b.socPerTick > 0 ? 'text-cyan-400' : 'text-rose-400'}">SOC ${b.socPerTick > 0 ? '+' : ''}${b.socPerTick}</span>`);
+
+                let buttonHTML = "";
+                if (!isStageUnlocked) buttonHTML = `<span class="text-xs text-rose-500 font-bold bg-rose-500/10 px-3 py-1.5 rounded-lg border border-rose-500/20">鎖定 (${STAGES[b.unlockStage].name})</span>`;
+                else if (blockForeign) buttonHTML = `<span class="text-xs text-rose-500 font-bold bg-rose-500/10 px-3 py-1.5 rounded-lg border border-rose-500/20">不支援跨國 / 未解鎖</span>`;
+                else if (!canBuildQueue) buttonHTML = `<span class="text-xs text-amber-500 font-bold bg-amber-500/10 px-3 py-1.5 rounded-lg border border-amber-500/20">佇列滿載</span>`;
+                else if (!canAfford) buttonHTML = `<span class="text-xs text-amber-500 font-bold bg-amber-500/10 px-3 py-1.5 rounded-lg border border-amber-500/20">資金不足</span>`;
+                else buttonHTML = `<button onclick="startOnlineConstruction('${b.id}')" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-xs font-bold rounded-lg transition active:scale-95 shadow-lg">立即建造</button>`;
+
+                card.innerHTML = `
+                    <div class="flex items-center gap-3 mb-3 md:mb-0">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-slate-900 border ${CATEGORY_STYLES[b.category].border} ${CATEGORY_STYLES[b.category].text}"><i class="fa-solid ${b.icon}"></i></div>
+                        <div>
+                            <div class="flex items-center gap-2"><span class="font-bold text-slate-100 text-sm">${b.name}</span>${b.isForeignAllowed ? '<span class="text-[9px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded font-bold border border-blue-500/30">可跨國</span>' : ''}</div>
+                            <div class="text-xs text-slate-400 flex flex-wrap gap-x-3 gap-y-1 mt-1">
+                                <span>花費: <strong class="text-amber-400 orbitron">${cost} M</strong></span>
+                                <span>工時: <strong class="text-slate-200 orbitron">${time}s</strong></span>
+                                <span class="border-l border-slate-700 pl-3">產出 /5s: ${yields.join(", ")}</span>
+                            </div>
+                        </div>
+                    </div><div>${buttonHTML}</div>
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+
+        window.startOnlineConstruction = async function(buildingId) {
+            const uid = auth.currentUser?.uid || currentUserId;
+            const M = getM();
+            const myIdx = roomData.players.findIndex(p => p.id === uid);
+            const me = roomData.players[myIdx];
+            const targetPlayer = roomData.players[activeViewIndex];
+            const b = BUILDINGS.find(x => x.id === buildingId);
+
+            me.mon -= (b.baseCost * M); me.totalSpent += (b.baseCost * M);
+            const plot = targetPlayer.plots[selectedPlotIndex];
+            plot.buildingId = buildingId; plot.level = 0; plot.ownerId = uid;
+            plot.progress = 0; plot.targetProgress = b.baseTime * M; plot.actionStartTime = Date.now();
+            plot.action = "build"; plot.isMultinational = (targetPlayer.id !== uid);
+
+            synth.playBuildStart(); document.getElementById("build-modal").classList.add("hidden");
+            await uploadPlayerState(myIdx); if (activeViewIndex !== myIdx) await uploadPlayerState(activeViewIndex);
+        };
+
+        window.upgradeOnlineBuilding = async function(plotIdx) {
+            const uid = auth.currentUser?.uid || currentUserId;
+            const M = getM();
+            const myIdx = roomData.players.findIndex(p => p.id === uid);
+            const me = roomData.players[myIdx];
+            const targetPlayer = roomData.players[activeViewIndex];
+            const plot = targetPlayer.plots[plotIdx];
+            if (!plot.buildingId) return;
+
             const b = BUILDINGS.find(x => x.id === plot.buildingId);
-            if (b) {
-                let mon = b.monPerTick + (plot.level-1)*b.monGrowth;
-                let env = b.envPerTick + (plot.level-1)*b.envGrowth;
-                let soc = b.socPerTick + (plot.level-1)*b.socGrowth;
-                if (plot.isMultinational) { tickMon += Math.round(mon*0.3); tickEnv += env; tickSoc += soc; }
-                else { tickMon += mon; tickEnv += env; tickSoc += soc; }
+            const cost = getUpgradeCost(b.baseCost * M, plot.level);
+            const time = getUpgradeTime(b.baseTime * M, plot.level + 1);
+
+            if (me.mon < cost) return;
+            me.mon -= cost; me.totalSpent += cost;
+            plot.progress = 0; plot.targetProgress = time; plot.actionStartTime = Date.now(); plot.action = "upgrade";
+
+            synth.playBuildStart();
+            await uploadPlayerState(myIdx); if (activeViewIndex !== myIdx) await uploadPlayerState(activeViewIndex);
+        };
+
+        window.evolveOnlineBuilding = async function(plotIdx) {
+            const uid = auth.currentUser?.uid || currentUserId;
+            const M = getM();
+            const myIdx = roomData.players.findIndex(p => p.id === uid);
+            const me = roomData.players[myIdx];
+            const targetPlayer = roomData.players[activeViewIndex];
+            const plot = targetPlayer.plots[plotIdx];
+
+            const cost = 200 * M;
+            if (me.mon < cost) return;
+            me.mon -= cost; me.totalSpent += cost;
+            plot.progress = 0; plot.targetProgress = 15 * M; plot.actionStartTime = Date.now(); plot.action = "evolve";
+
+            synth.playBuildStart();
+            await uploadPlayerState(myIdx); if (activeViewIndex !== myIdx) await uploadPlayerState(activeViewIndex);
+        };
+
+        document.getElementById("dispatch-tourist-btn").addEventListener("click", async () => {
+            const uid = auth.currentUser?.uid || currentUserId;
+            const M = getM();
+            const myIdx = roomData.players.findIndex(p => p.id === uid);
+            const me = roomData.players[myIdx];
+            const targetPlayer = roomData.players[activeViewIndex];
+
+            const cost = 100 * M;
+            if (targetPlayer.id === uid || me.pop < cost) return;
+            me.pop -= cost;
+
+            const totalLevels = targetPlayer.plots.filter(pl => pl.buildingId && pl.action === null).reduce((sum, pl) => sum + pl.level, 0);
+            const targetEarn = Math.max(30 * M, totalLevels * 10 * M);
+            const rewardCommission = Math.floor(targetEarn * 0.3);
+
+            targetPlayer.mon += targetEarn;
+            targetPlayer.env = Math.max(0, targetPlayer.env - (6 * M));
+            targetPlayer.soc = Math.max(0, targetPlayer.soc - (6 * M));
+            me.mon += rewardCommission;
+
+            synth.playTourist(); showNotification(`已成功向 ${targetPlayer.name} 派送大型旅行團！`, "yellow");
+            await uploadPlayerState(myIdx); await uploadPlayerState(activeViewIndex);
+        });
+
+        // UI 渲染
+        function renderAll() {
+            if (!roomData) return;
+            
+            const M = getM();
+            document.getElementById("tourist-pop-cost").textContent = 100 * M;
+            document.getElementById("tourist-mon-earn").textContent = 10 * M;
+            document.getElementById("tourist-env-dmg").textContent = 6 * M;
+            document.getElementById("tourist-soc-dmg").textContent = 6 * M;
+
+            renderPlayerCards(); renderPlots(); renderSynergies(); renderQueue(); renderMultinationalPanel();
+        }
+
+        function renderPlayerCards() {
+            const container = document.getElementById("player-cards-container");
+            container.innerHTML = "";
+            const uid = auth.currentUser?.uid || currentUserId;
+
+            roomData.players.forEach((p, idx) => {
+                const isActive = activeViewIndex === idx; const isMe = p.id === uid;
+                let cardBorderClass = "border-slate-800 bg-slate-900";
+                if (isActive) cardBorderClass = "neon-border-blue bg-indigo-950/20";
+                else if (p.env <= 30 || p.soc <= 30) cardBorderClass = "neon-border-red bg-slate-900";
+
+                const card = document.createElement("div");
+                card.className = `border-2 p-3 rounded-xl cursor-pointer transition relative overflow-hidden ${cardBorderClass}`;
+                card.addEventListener("click", () => { activeViewIndex = idx; renderAll(); });
+
+                let badgeHTML = "";
+                if (p.rank === 1) badgeHTML = `<span class="absolute top-2 right-2 text-yellow-400 text-sm"><i class="fa-solid fa-crown animate-bounce"></i></span>`;
+                else if (isMe) badgeHTML = `<span class="absolute top-2 right-2 text-[9px] bg-indigo-600 text-white px-1 py-0.5 rounded font-bold">YOU</span>`;
+
+                card.innerHTML = `
+                    ${badgeHTML}
+                    <div class="flex items-center gap-2 mb-1.5"><span class="text-sm font-black ${isMe ? 'text-indigo-400' : 'text-slate-300'}">${p.name}</span><span class="text-[10px] bg-slate-950/80 text-slate-400 px-1.5 py-0.5 rounded orbitron">Rank #${p.rank || idx+1}</span></div>
+                    <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-xs mb-1.5">
+                        <div class="flex items-center gap-1"><i class="fa-solid fa-coins text-amber-400 w-3 text-center"></i><span class="orbitron font-bold text-slate-200">${p.mon}</span></div>
+                        <div class="flex items-center gap-1"><i class="fa-solid fa-people-group text-sky-400 w-3 text-center"></i><span class="orbitron text-slate-400">${p.pop}</span></div>
+                        <div class="flex items-center gap-1"><i class="fa-solid fa-leaf text-emerald-400 w-3 text-center"></i><span class="orbitron ${p.env <= 30 ? 'text-rose-400 font-bold' : 'text-slate-300'}">${p.env}</span></div>
+                        <div class="flex items-center gap-1"><i class="fa-solid fa-heart text-pink-400 w-3 text-center"></i><span class="orbitron ${p.soc <= 30 ? 'text-rose-400 font-bold' : 'text-slate-300'}">${p.soc}</span></div>
+                    </div>
+                    <div class="border-t border-slate-800/80 pt-1.5 flex justify-between items-center text-[10px] text-slate-400"><span>${STAGES[p.stage].name}</span><span class="orbitron text-indigo-400 font-bold">${p.totalScore}分</span></div>
+                `;
+                container.appendChild(card);
+            });
+
+            const me = roomData.players.find(p => p.id === uid);
+            const targetPlayer = roomData.players[activeViewIndex];
+            const dispatchBtn = document.getElementById("dispatch-tourist-btn");
+
+            if (targetPlayer.id === uid) {
+                dispatchBtn.disabled = true; dispatchBtn.innerHTML = `<i class="fa-solid fa-lock mr-1"></i> 無法向本國派客`;
+            } else if (me.pop < (100 * getM())) {
+                dispatchBtn.disabled = true; dispatchBtn.innerHTML = `<i class="fa-solid fa-users-slash mr-1"></i> 人口不足 (需 ${100 * getM()})`;
+            } else {
+                dispatchBtn.disabled = false; dispatchBtn.innerHTML = `<i class="fa-solid fa-share-nodes mr-1"></i> 派發旅客至 ${targetPlayer.name}`;
+            }
+            document.getElementById("viewing-city-name").textContent = targetPlayer.name;
+        }
+
+        function renderPlots() {
+            const grid = document.getElementById("plots-grid");
+            grid.innerHTML = "";
+            const uid = auth.currentUser?.uid || currentUserId;
+            const targetPlayer = roomData.players[activeViewIndex];
+            const limit = getStageLimit(targetPlayer.stage);
+            document.getElementById("unlocked-plots-count").textContent = `${limit}/12`;
+            const cityWarn = targetPlayer.env <= 30 || targetPlayer.soc <= 30;
+            const M = getM();
+
+            for (let i = 0; i < 12; i++) {
+                const plot = targetPlayer.plots[i];
+                const card = document.createElement("div");
+                
+                if (i >= limit) {
+                    card.className = "bg-slate-950/40 border border-slate-800/50 rounded-xl h-28 flex flex-col items-center justify-center text-slate-600 gap-1";
+                    card.innerHTML = `<i class="fa-solid fa-lock text-xl text-slate-700"></i><span class="text-[10px] tracking-widest uppercase">區域鎖定</span>`;
+                    grid.appendChild(card); continue;
+                }
+
+                card.className = "bg-slate-900 border border-slate-800 hover:border-slate-700/80 rounded-xl p-3 h-28 flex flex-col justify-between transition relative overflow-hidden group";
+                if (cityWarn) card.classList.add("ring-1", "ring-rose-500/20");
+
+                if (!plot.buildingId && plot.action === null) {
+                    card.innerHTML = `<div class="text-[10px] text-slate-500">地塊 #${i+1}</div><div class="text-center py-2"><span class="text-xs text-slate-500 group-hover:text-indigo-400 transition font-bold"><i class="fa-solid fa-plus-circle mr-1"></i> 招商開發</span></div><div></div>`;
+                    card.classList.add("cursor-pointer", "hover:bg-slate-800/30");
+                    card.addEventListener("click", () => openBuildModal(i));
+                } else if (plot.action !== null) {
+                    const b = BUILDINGS.find(x => x.id === plot.buildingId);
+                    const pct = Math.min(100, Math.floor((plot.progress / plot.targetProgress) * 100));
+                    const builder = roomData.players.find(p => p.id === plot.ownerId);
+                    
+                    let actText = plot.action === "upgrade" ? `升級中` : plot.action === "evolve" ? "改建中" : "建造中";
+                    card.innerHTML = `
+                        <div class="flex justify-between items-center text-[10px]"><span class="text-slate-500">地塊 #${i+1}</span><span class="text-indigo-400 font-bold animate-pulse">${actText}</span></div>
+                        <div class="space-y-1"><div class="text-xs font-black text-slate-300 truncate">${b ? b.shortName : "進行中"}</div><div class="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden"><div class="bg-indigo-500 h-full transition-all duration-300" style="width: ${pct}%"></div></div></div>
+                        <div class="flex justify-between text-[8px] text-slate-500"><span>投資: ${builder ? builder.name : "未知"}</span><span>${plot.progress} / ${plot.targetProgress}s</span></div>
+                    `;
+                } else {
+                    const b = BUILDINGS.find(x => x.id === plot.buildingId);
+                    const owner = roomData.players.find(p => p.id === plot.ownerId);
+                    const isForeignPlot = plot.isMultinational;
+
+                    let monYield = b.monPerTick + (plot.level - 1) * b.monGrowth;
+                    if (isForeignPlot) monYield = `抽成:${monYield - Math.round(monYield * 0.3)} / 地主:${Math.round(monYield * 0.3)}`;
+
+                    let actionsHTML = "";
+                    if (plot.ownerId === uid) {
+                        const isLevelMax = plot.level >= 5;
+                        const uCost = isLevelMax ? 0 : getUpgradeCost(b.baseCost * M, plot.level);
+                        let uBtn = isLevelMax ? `<span class="text-[9px] text-emerald-400 font-bold">滿級 Lv.5</span>` : `<button onclick="upgradeOnlineBuilding(${i})" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-1.5 py-0.5 rounded text-[9px] font-bold">升級($${uCost})</button>`;
+                        let eBtn = (b.id === "youth_hostel" && plot.level === 5) ? `<button onclick="evolveOnlineBuilding(${i})" class="bg-purple-900/60 hover:bg-purple-800 text-purple-300 px-1.5 py-0.5 rounded text-[9px] font-bold">改建酒店($${200*M})</button>` : "";
+                        actionsHTML = `<div class="flex gap-1 items-center mt-1">${uBtn}${eBtn}</div>`;
+                    } else { actionsHTML = `<span class="text-[9px] text-slate-500">${owner ? owner.name : "對手"} 的投資</span>`; }
+
+                    card.innerHTML = `
+                        <div class="flex justify-between items-center text-[10px]"><span class="text-slate-500">地塊 #${i+1}</span><span class="orbitron font-bold text-slate-400">Lv.${plot.level}</span></div>
+                        <div class="my-1 flex items-center gap-1.5"><span class="text-sm ${CATEGORY_STYLES[b.category].text}"><i class="fa-solid ${b.icon}"></i></span><span class="text-xs font-bold text-slate-200 truncate flex-1">${b.shortName}</span></div>
+                        <div class="text-[9px] text-slate-400 space-y-0.5 leading-tight"><div>收益 /5s: <strong class="text-amber-400">${monYield} M</strong></div></div>
+                        <div class="flex justify-between items-center mt-1 border-t border-slate-800/50 pt-1">${actionsHTML}${isForeignPlot ? '<span class="text-[8px] bg-indigo-900/40 text-indigo-400 px-1 rounded">外資</span>' : ''}</div>
+                    `;
+                }
+                grid.appendChild(card);
             }
         }
-    });
-    roomData.players.forEach((otherP, otherIdx) => {
-        if (otherIdx !== myIdx) otherP.plots.forEach(plot => { if (plot.isMultinational && plot.ownerId === uid && plot.action === null) { const b = BUILDINGS.find(x => x.id === plot.buildingId); if (b) tickMon += Math.ceil((b.monPerTick + (plot.level-1)*b.monGrowth)*0.7); } });
-    });
-    if (p.stage === "Decline") { tickMon = Math.round(tickMon*0.5); tickEnv = Math.round(tickEnv*0.5); tickSoc = Math.round(tickSoc*0.5); }
-    p.mon += tickMon; p.env = Math.max(0, p.env + tickEnv); p.soc = Math.max(0, p.soc + tickSoc);
-    const builtIds = p.plots.filter(pl => pl.buildingId && pl.action === null).map(pl => pl.buildingId);
-    SYNERGIES.forEach(synergy => {
-        if (synergy.check(builtIds)) {
-            if (synergy.id === "syn_diverse") { p.mon += 15; p.env += 2; p.soc += 2; }
-            else if (synergy.id === "syn_eco") p.env += 15;
-            else if (synergy.id === "syn_culture") p.soc += 15;
-            else if (synergy.id === "syn_activity") { p.mon += 18; p.soc += 2; }
-            else if (synergy.id === "syn_leisure") { p.mon += 25; p.env -= 2; }
-            if (!p.activeSynergies.includes(synergy.id)) { p.activeSynergies.push(synergy.id); showNotification(`品牌組合啟動：【${synergy.name}】！獲得額外加成！`, "yellow"); synth.playSynergy(); spawnParticles(window.innerWidth/2, window.innerHeight/2, "#fbbf24"); }
+
+        function renderQueue() {
+            const container = document.getElementById("queue-display"); container.innerHTML = "";
+            const uid = auth.currentUser?.uid || currentUserId;
+            let queueItems = [];
+            roomData.players.forEach(p => p.plots.forEach((pl) => {
+                if (pl.ownerId === uid && pl.action !== null) {
+                    const b = BUILDINGS.find(x => x.id === pl.buildingId);
+                    queueItems.push({ city: p.name, buildingName: b ? b.shortName : "建築", type: pl.action === "upgrade" ? "升級" : pl.action === "evolve" ? "改建" : "建造", progress: pl.progress, target: pl.targetProgress });
+                }
+            }));
+            if (queueItems.length === 0) { container.innerHTML = `<span class="text-slate-500">（目前無工程進行中）</span>`; return; }
+            queueItems.forEach(item => {
+                const el = document.createElement("div"); el.className = "bg-indigo-950/40 border border-indigo-800/40 rounded-lg px-2 py-1 text-[10px] flex items-center gap-2";
+                el.innerHTML = `<span class="text-slate-400">[${item.city}]</span><strong class="text-indigo-300">${item.type} ${item.buildingName}</strong><span class="orbitron text-indigo-400 font-bold">${item.progress}/${item.target}s</span>`;
+                container.appendChild(el);
+            });
         }
-    });
-    if (p.stage === "Decline" && p.env > 0 && p.soc > 0 && p.declineRecoveryTimer >= 15 * M) { p.declineRecoveryTimer = 0; p.stage = "Exploration"; showNotification(`環境改善，成功脫離衰落！`, "green"); }
-    await uploadPlayerState(myIdx);
-}
-function executeMockAIResources() {
-    const uid = auth.currentUser?.uid || currentUserId;
-    roomData.players.forEach(p => { if(p.id === uid) return; p.pop += 8; let tickMon=0,tickEnv=0,tickSoc=0; p.plots.forEach(plot => { if(plot.buildingId && plot.action===null){ const b=BUILDINGS.find(x=>x.id===plot.buildingId); if(b){ let mon=b.monPerTick+(plot.level-1)*b.monGrowth; let env=b.envPerTick+(plot.level-1)*b.envGrowth; let soc=b.socPerTick+(plot.level-1)*b.socGrowth; if(plot.isMultinational){ tickMon+=Math.round(mon*0.3); tickEnv+=env; tickSoc+=soc; } else { tickMon+=mon; tickEnv+=env; tickSoc+=soc; } } } }); if(p.stage==="Decline"){ tickMon=Math.round(tickMon*0.5); tickEnv=Math.round(tickEnv*0.5); tickSoc=Math.round(tickSoc*0.5); } p.mon+=tickMon; p.env=Math.max(0,p.env+tickEnv); p.soc=Math.max(0,p.soc+tickSoc); });
-    recalculateScoresAndStages(roomData.players);
-    renderAll();
-}
-function executeMockAITick() {
-    const uid = auth.currentUser?.uid || currentUserId;
-    const M = getM();
-    roomData.players.forEach(p => {
-        if(p.id === uid || p.plots.some(pl=>pl.action!==null) || Math.random()>0.25) return;
-        const limit = getStageLimit(p.stage);
-        let emptyIdxs=[], builtPlots=[];
-        for(let i=0;i<limit;i++) { if(!p.plots[i].buildingId && p.plots[i].action===null) emptyIdxs.push(i); else if(p.plots[i].buildingId && p.plots[i].action===null) builtPlots.push(i); }
-        if(builtPlots.length>0 && Math.random()>0.5){
-            const plot = p.plots[builtPlots[Math.floor(Math.random()*builtPlots.length)]];
-            if(plot.level<5){
-                const b = BUILDINGS.find(x=>x.id===plot.buildingId);
-                const cost = getUpgradeCost(b.baseCost*M, plot.level);
-                if(p.mon>=cost){ p.mon-=cost; p.totalSpent+=cost; plot.actionStartTime=Date.now(); plot.targetProgress=getUpgradeTime(b.baseTime*M, plot.level+1); plot.action="upgrade"; }
+
+        function renderSynergies() {
+            const container = document.getElementById("synergies-list"); container.innerHTML = "";
+            const uid = auth.currentUser?.uid || currentUserId;
+            const me = roomData.players.find(p => p.id === uid);
+            const builtIds = me.plots.filter(pl => pl.buildingId && pl.action === null).map(pl => pl.buildingId);
+
+            SYNERGIES.forEach(synergy => {
+                const isActive = synergy.check(builtIds);
+                let missingList = [];
+                if (synergy.id === "syn_eco") missingList = ["nature_trail", "forest_camp", "marine_reserve"].filter(id => !builtIds.includes(id));
+                else if (synergy.id === "syn_culture") missingList = ["local_market", "history_museum", "heritage_park"].filter(id => !builtIds.includes(id));
+                else if (synergy.id === "syn_activity") missingList = ["marathon", "beer_festival"].filter(id => !builtIds.includes(id));
+                else if (synergy.id === "syn_leisure") {
+                    if (!builtIds.includes("youth_hostel") && !builtIds.includes("star_hotel")) missingList.push("youth_hostel_or_star_hotel");
+                    if (!builtIds.includes("water_park")) missingList.push("water_park");
+                    if (!builtIds.includes("shopping_mall")) missingList.push("shopping_mall");
+                } else if (synergy.id === "syn_diverse") {
+                    const allCats = ["cultural", "natural", "leisure", "activities", "entertainment"];
+                    const myCats = new Set(builtIds.map(id => BUILDINGS.find(x => x.id === id)?.category));
+                    allCats.forEach(c => { if(!myCats.has(c)) missingList.push(c); });
+                }
+
+                const missingStr = missingList.map(id => {
+                    if (id === "youth_hostel_or_star_hotel") return "民宿/星級酒店";
+                    const b = BUILDINGS.find(x => x.id === id); return b ? b.shortName : id;
+                }).join(", ");
+
+                const el = document.createElement("div"); el.className = `p-3 rounded-xl border text-xs flex flex-col justify-between transition ${isActive ? 'bg-amber-950/20 border-amber-500/50' : 'bg-slate-950/60 border-slate-800'}`;
+                el.innerHTML = `
+                    <div class="flex justify-between items-center"><span class="font-bold ${isActive ? 'text-amber-400' : 'text-slate-300'}">${synergy.name}</span>${isActive ? '<span class="text-[9px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded font-bold border border-amber-500/30">已啟動</span>' : '<span class="text-[9px] bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">未達成</span>'}</div>
+                    <div class="text-[10px] text-slate-400 mt-1">${synergy.desc}</div>
+                    <div class="mt-2 text-[10px] flex justify-between items-center text-slate-500 border-t border-slate-800/80 pt-1"><span>獎勵: <strong class="text-emerald-400">${synergy.reward}</strong></span>${!isActive && missingStr ? `<span class="text-rose-400/80">缺: ${missingStr}</span>` : ''}</div>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function renderMultinationalPanel() {
+            const container = document.getElementById("multinational-panel"); container.innerHTML = "";
+            const uid = auth.currentUser?.uid || currentUserId;
+            let list = [];
+            roomData.players.forEach(p => p.plots.forEach((pl, plotIdx) => {
+                if (pl.isMultinational && pl.ownerId === uid) {
+                    const b = BUILDINGS.find(x => x.id === pl.buildingId);
+                    list.push({ city: p.name, plotIdx: plotIdx, name: b ? b.shortName : "外國企業", level: pl.level, state: pl.action ? "建造中" : "營業中" });
+                }
+            }));
+            if (list.length === 0) { container.innerHTML = `<span class="text-slate-500 block text-center py-2">目前沒有在外國進行投資</span>`; return; }
+            list.forEach(m => {
+                const row = document.createElement("div"); row.className = "flex justify-between items-center bg-slate-900 px-2 py-1.5 rounded-lg border border-slate-800/80";
+                row.innerHTML = `<span class="text-indigo-400 font-bold">${m.city} #${m.plotIdx + 1}</span><span>${m.name} Lv.${m.level} (${m.state})</span>`;
+                container.appendChild(row);
+            });
+        }
+
+        let gameTime = 300;
+        function updateTimerUI() {
+            const td = document.getElementById("timer-display");
+            td.textContent = `${Math.floor(gameTime / 60).toString().padStart(2, '0')}:${(gameTime % 60).toString().padStart(2, '0')}`;
+            if (gameTime <= 30) { td.classList.add("text-rose-500", "animate-pulse"); td.classList.remove("text-slate-100"); if (gameTime % 5 === 0) synth.playBeep(); }
+            else { td.classList.remove("text-rose-500", "animate-pulse"); td.classList.add("text-slate-100"); }
+        }
+
+        function getStageLimit(stageName) { return STAGES[stageName]?.limit || 3; }
+        function getUpgradeCost(baseCost, currentLevel) { return Math.floor(baseCost * Math.pow(1.4, currentLevel)); }
+        function getUpgradeTime(baseTime, nextLevel) { return baseTime * nextLevel; }
+
+        function endOnlineGame() {
+            clearInterval(localProgressInterval); clearInterval(localTickInterval); if (gameTimerInterval) clearInterval(gameTimerInterval);
+            const rc = document.getElementById("results-list-container"); rc.innerHTML = "";
+            const uid = auth.currentUser?.uid || currentUserId;
+            [...roomData.players].sort((a, b) => b.totalScore - a.totalScore).forEach((p, idx) => {
+                const isMe = p.id === uid;
+                const card = document.createElement("div");
+                card.className = `p-4 rounded-xl border flex flex-col md:flex-row md:items-center justify-between gap-3 text-left ${isMe ? 'bg-indigo-950/40 border-indigo-500' : 'bg-slate-950 border-slate-800'}`;
+                card.innerHTML = `
+                    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full flex items-center justify-center orbitron font-black text-slate-950 ${idx === 0 ? 'bg-yellow-400' : idx === 1 ? 'bg-slate-300' : 'bg-slate-500'}">${idx + 1}</div>
+                        <div><div class="font-bold text-slate-100 flex items-center gap-2"><span>${p.name}</span>${isMe ? '<span class="text-[9px] bg-indigo-600 text-white px-1.5 py-0.5 rounded">你</span>' : ''}<span class="text-[10px] text-slate-400">(${STAGES[p.stage].name})</span></div>
+                            <div class="text-[10px] text-slate-400 flex flex-wrap gap-x-3 mt-1"><span>資金: <strong class="text-amber-400">${p.mon}</strong></span><span>資產(0.6): <strong class="text-blue-400">${Math.floor(p.totalSpent * 0.6)}</strong></span><span>環境(1.5): <strong class="text-emerald-400">${Math.floor(p.env * 1.5)}</strong></span><span>社會(1.5): <strong class="text-pink-400">${Math.floor(p.soc * 1.5)}</strong></span></div>
+                        </div>
+                    </div><div class="text-right"><div class="text-lg font-black orbitron ${idx === 0 ? 'text-yellow-400' : 'text-slate-100'}">${p.totalScore} 分</div></div>
+                `;
+                rc.appendChild(card);
+            });
+            document.getElementById("results-modal").classList.remove("hidden");
+        }
+
+        document.getElementById("restart-game-btn").addEventListener("click", () => { if (unsubscribeRoom) unsubscribeRoom(); location.reload(); });
+        document.getElementById("close-modal-btn").addEventListener("click", () => document.getElementById("build-modal").classList.add("hidden"));
+        document.getElementById("cancel-build-btn").addEventListener("click", () => document.getElementById("build-modal").classList.add("hidden"));
+        document.getElementById("sound-toggle-btn").addEventListener("click", () => {
+            const active = synth.toggle(); const i = document.getElementById("sound-icon"), t = document.getElementById("sound-text");
+            if (active) { i.className = "fa-solid fa-volume-high text-green-400"; t.textContent = "音效已開啟"; }
+            else { i.className = "fa-solid fa-volume-xmark text-rose-500"; t.textContent = "音效已關閉"; }
+        });
+
+        function showNotification(text, theme = "indigo") {
+            const toast = document.getElementById("toast"); document.getElementById("toast-text").textContent = text;
+            toast.className = `fixed top-24 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-full shadow-2xl text-white font-bold text-center z-50 pointer-events-none transition-all duration-500 ${theme === "green" ? "bg-gradient-to-r from-emerald-500 to-teal-600" : theme === "red" ? "bg-gradient-to-r from-rose-600 to-red-600" : theme === "yellow" ? "bg-gradient-to-r from-amber-500 to-orange-500" : "bg-gradient-to-r from-purple-600 to-indigo-600"}`;
+            toast.classList.remove("opacity-0", "scale-75"); toast.classList.add("opacity-100", "scale-100");
+            setTimeout(() => { toast.classList.add("opacity-0", "scale-75"); toast.classList.remove("opacity-100", "scale-100"); }, 3000);
+        }
+
+        function spawnParticles(x, y, color = "#fbbf24") {
+            const container = document.getElementById("particle-container");
+            for (let i = 0; i < 15; i++) {
+                const p = document.createElement("div"); p.className = "particle"; p.style.backgroundColor = color; p.style.left = `${x}px`; p.style.top = `${y}px`; p.style.width = `${Math.random() * 8 + 4}px`; p.style.height = p.style.width;
+                const angle = Math.random() * Math.PI * 2, speed = Math.random() * 80 + 20;
+                p.style.setProperty("--tx", `${Math.cos(angle) * speed}px`); p.style.setProperty("--ty", `${Math.sin(angle) * speed - 50}px`);
+                container.appendChild(p); setTimeout(() => p.remove(), 1000);
             }
-        } else if(emptyIdxs.length>0){
-            const plotIdx = emptyIdxs[0];
-            const targetB = BUILDINGS.filter(b => b.unlockStage==="Exploration"||b.unlockStage==="Involvement")[Math.floor(Math.random()*2)];
-            if(p.mon>=targetB.baseCost*M){ p.mon-=targetB.baseCost*M; p.totalSpent+=targetB.baseCost*M; p.plots[plotIdx] = { buildingId:targetB.id, level:0, ownerId:p.id, progress:0, targetProgress:targetB.baseTime*M, actionStartTime:Date.now(), action:"build", isMultinational:false }; }
         }
-    });
-}
-window.openBuildModal = function(plotIndex) { selectedPlotIndex=plotIndex; document.getElementById("modal-plot-name").textContent=`地塊 #${plotIndex+1}`; renderModalTabs(); filterModalBuildList("all"); document.getElementById("build-modal").classList.remove("hidden"); };
-function renderModalTabs() {
-    const container = document.getElementById("modal-tabs");
-    container.innerHTML = "";
-    const tabs = [{ id:"all", label:"全部" },{ id:"cultural", label:"文化" },{ id:"natural", label:"自然" },{ id:"leisure", label:"消閒" },{ id:"activities", label:"活動" },{ id:"entertainment", label:"娛樂" },{ id:"foreign", label:"可跨國" }];
-    tabs.forEach(t => {
-        const btn = document.createElement("button");
-        btn.className = `tab-btn px-3 py-1.5 rounded-lg text-xs font-bold transition ${t.id==="all"?"bg-indigo-600 text-white":"bg-slate-800 text-slate-300 hover:bg-slate-700"}`;
-        btn.textContent = t.label;
-        btn.addEventListener("click", () => { container.querySelectorAll(".tab-btn").forEach(b => { b.classList.remove("bg-indigo-600","text-white"); b.classList.add("bg-slate-800","text-slate-300","hover:bg-slate-700"); }); btn.classList.add("bg-indigo-600","text-white"); btn.classList.remove("bg-slate-800","text-slate-300","hover:bg-slate-700"); filterModalBuildList(t.id); });
-        container.appendChild(btn);
-    });
-}
-function filterModalBuildList(tabId) {
-    const listContainer = document.getElementById("modal-build-list");
-    listContainer.innerHTML = "";
-    const uid = auth.currentUser?.uid || currentUserId;
-    const targetPlayer = roomData.players[activeViewIndex];
-    const me = roomData.players.find(p => p.id === uid);
-    const isForeign = targetPlayer.id !== uid;
-    const M = getM();
-    const foreignUnlocked = me.stage === "Consolidation" || me.stage === "Stagnation";
-    const stageOrder = ["Exploration","Involvement","Development","Consolidation","Stagnation"];
-    const meStageIdx = stageOrder.indexOf(me.stage==="Decline"?"Exploration":me.stage);
-    let activeTasks = 0;
-    roomData.players.forEach(p => p.plots.forEach(pl => { if(pl.ownerId===uid && pl.action!==null) activeTasks++; }));
-    const canBuildQueue = activeTasks < 2;
-    let renderList = [...BUILDINGS];
-    if(tabId === "all") renderList.sort((a,b) => { const getScore=(item)=>{ if(meStageIdx<stageOrder.indexOf(item.unlockStage)) return 1; if(me.mon<(item.baseCost*M) || !canBuildQueue || (isForeign && (!foreignUnlocked || !item.isForeignAllowed))) return 2; return 3; }; return getScore(b)-getScore(a); });
-    renderList.forEach(b => {
-        if(tabId !== "all" && tabId === "foreign" && !b.isForeignAllowed) return;
-        if(tabId !== "all" && tabId !== "foreign" && b.category !== tabId) return;
-        const isStageUnlocked = meStageIdx >= stageOrder.indexOf(b.unlockStage);
-        const blockForeign = isForeign && (!foreignUnlocked || !b.isForeignAllowed);
-        const cost = b.baseCost * M;
-        const time = b.baseTime * M;
-        const canAfford = me.mon >= cost;
-        const card = document.createElement("div");
-        card.className = `flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border transition ${CATEGORY_STYLES[b.category].border} ${CATEGORY_STYLES[b.category].bg}`;
-        let yields = [];
-        if(b.monPerTick!==0) yields.push(`<span class="text-amber-400 font-bold">MON +${b.monPerTick}</span>`);
-        if(b.envPerTick!==0) yields.push(`<span class="${b.envPerTick>0?'text-emerald-400':'text-rose-400'}">ENV ${b.envPerTick>0?'+':''}${b.envPerTick}</span>`);
-        if(b.socPerTick!==0) yields.push(`<span class="${b.socPerTick>0?'text-cyan-400':'text-rose-400'}">SOC ${b.socPerTick>0?'+':''}${b.socPerTick}</span>`);
-        let buttonHTML = "";
-        if(!isStageUnlocked) buttonHTML = `<span class="text-xs text-rose-500 font-bold bg-rose-500/10 px-3 py-1.5 rounded-lg border border-rose-500/20">鎖定 (${STAGES[b.unlockStage].name})</span>`;
-        else if(blockForeign) buttonHTML = `<span class="text-xs text-rose-500 font-bold bg-rose-500/10 px-3 py-1.5 rounded-lg border border-rose-500/20">不支援跨國 / 未解鎖</span>`;
-        else if(!canBuildQueue) buttonHTML = `<span class="text-xs text-amber-500 font-bold bg-amber-500/10 px-3 py-1.5 rounded-lg border border-amber-500/20">佇列滿載</span>`;
-        else if(!canAfford) buttonHTML = `<span class="text-xs text-amber-500 font-bold bg-amber-500/10 px-3 py-1.5 rounded-lg border border-amber-500/20">資金不足</span>`;
-        else buttonHTML = `<button onclick="startOnlineConstruction('${b.id}')" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-xs font-bold rounded-lg transition active:scale-95 shadow-lg">立即建造</button>`;
-        card.innerHTML = `<div class="flex items-center gap-3 mb-3 md:mb-0"><div class="w-10 h-10 rounded-lg flex items-center justify-center bg-slate-900 border ${CATEGORY_STYLES[b.category].border} ${CATEGORY_STYLES[b.category].text}"><i class="fa-solid ${b.icon}"></i></div><div><div class="flex items-center gap-2"><span class="font-bold text-slate-100 text-sm">${b.name}</span>${b.isForeignAllowed?'<span class="text-[9px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded font-bold border border-blue-500/30">可跨國</span>':''}</div><div class="text-xs text-slate-400 flex flex-wrap gap-x-3 gap-y-1 mt-1"><span>花費: <strong class="text-amber-400 orbitron">${cost} M</strong></span><span>工時: <strong class="text-slate-200 orbitron">${time}s</strong></span><span class="border-l border-slate-700 pl-3">產出 /5s: ${yields.join(", ")}</span></div></div></div><div>${buttonHTML}</div>`;
-        listContainer.appendChild(card);
-    });
-}
-window.startOnlineConstruction = async function(buildingId) {
-    const uid = auth.currentUser?.uid || currentUserId;
-    const M = getM();
-    const myIdx = roomData.players.findIndex(p => p.id === uid);
-    const me = roomData.players[myIdx];
-    const targetPlayer = roomData.players[activeViewIndex];
-    const b = BUILDINGS.find(x => x.id === buildingId);
-    me.mon -= (b.baseCost * M); me.totalSpent += (b.baseCost * M);
-    const plot = targetPlayer.plots[selectedPlotIndex];
-    plot.buildingId = buildingId; plot.level = 0; plot.ownerId = uid;
-    plot.progress = 0; plot.targetProgress = b.baseTime * M; plot.actionStartTime = Date.now();
-    plot.action = "build"; plot.isMultinational = (targetPlayer.id !== uid);
-    synth.playBuildStart(); document.getElementById("build-modal").classList.add("hidden");
-    await uploadPlayerState(myIdx); if (activeViewIndex !== myIdx) await uploadPlayerState(activeViewIndex);
-};
-window.upgradeOnlineBuilding = async function(plotIdx) {
-    const uid = auth.currentUser?.uid || currentUserId;
-    const M = getM();
-    const myIdx = roomData.players.findIndex(p => p.id === uid);
-    const me = roomData.players[myIdx];
-    const targetPlayer = roomData.players[activeViewIndex];
-    const plot = targetPlayer.plots[plotIdx];
-    if(!plot.buildingId) return;
-    const b = BUILDINGS.find(x => x.id === plot.buildingId);
-    const cost = getUpgradeCost(b.baseCost * M, plot.level);
-    const time = getUpgradeTime(b.baseTime * M, plot.level + 1);
-    if(me.mon < cost) return;
-    me.mon -= cost; me.totalSpent += cost;
-    plot.progress = 0; plot.targetProgress = time; plot.actionStartTime = Date.now(); plot.action = "upgrade";
-    synth.playBuildStart();
-    await uploadPlayerState(myIdx); if(activeViewIndex !== myIdx) await uploadPlayerState(activeViewIndex);
-};
-window.evolveOnlineBuilding = async function(plotIdx) {
-    const uid = auth.currentUser?.uid || currentUserId;
-    const M = getM();
-    const myIdx = roomData.players.findIndex(p => p.id === uid);
-    const me = roomData.players[myIdx];
-    const targetPlayer = roomData.players[activeViewIndex];
-    const plot = targetPlayer.plots[plotIdx];
-    const cost = 200 * M;
-    if(me.mon < cost) return;
-    me.mon -= cost; me.totalSpent += cost;
-    plot.progress = 0; plot.targetProgress = 15 * M; plot.actionStartTime = Date.now(); plot.action = "evolve";
-    synth.playBuildStart();
-    await uploadPlayerState(myIdx); if(activeViewIndex !== myIdx) await uploadPlayerState(activeViewIndex);
-};
-document.getElementById("dispatch-tourist-btn").addEventListener("click", async () => {
-    const uid = auth.currentUser?.uid || currentUserId;
-    const M = getM();
-    const myIdx = roomData.players.findIndex(p => p.id === uid);
-    const me = roomData.players[myIdx];
-    const targetPlayer = roomData.players[activeViewIndex];
-    const cost = 100 * M;
-    if(targetPlayer.id === uid || me.pop < cost) return;
-    me.pop -= cost;
-    const totalLevels = targetPlayer.plots.filter(pl => pl.buildingId && pl.action === null).reduce((sum,pl)=>sum+pl.level,0);
-    const targetEarn = Math.max(30 * M, totalLevels * 10 * M);
-    const rewardCommission = Math.floor(targetEarn * 0.3);
-    targetPlayer.mon += targetEarn;
-    targetPlayer.env = Math.max(0, targetPlayer.env - (6*M));
-    targetPlayer.soc = Math.max(0, targetPlayer.soc - (6*M));
-    me.mon += rewardCommission;
-    synth.playTourist(); showNotification(`已成功向 ${targetPlayer.name} 派送大型旅行團！`, "yellow");
-    await uploadPlayerState(myIdx); await uploadPlayerState(activeViewIndex);
-});
-function renderAll() {
-    if(!roomData) return;
-    const M = getM();
-    document.getElementById("tourist-pop-cost").textContent = 100 * M;
-    document.getElementById("tourist-mon-earn").textContent = 10 * M;
-    document.getElementById("tourist-env-dmg").textContent = 6 * M;
-    document.getElementById("tourist-soc-dmg").textContent = 6 * M;
-    renderPlayerCards(); renderPlots(); renderSynergies(); renderQueue(); renderMultinationalPanel();
-}
-function renderPlayerCards() {
-    const container = document.getElementById("player-cards-container");
-    container.innerHTML = "";
-    const uid = auth.currentUser?.uid || currentUserId;
-    roomData.players.forEach((p, idx) => {
-        const isActive = activeViewIndex === idx; const isMe = p.id === uid;
-        let cardBorderClass = "border-slate-800 bg-slate-900";
-        if(isActive) cardBorderClass = "neon-border-blue bg-indigo-950/20";
-        else if(p.env <= 30 || p.soc <= 30) cardBorderClass = "neon-border-red bg-slate-900";
-        const card = document.createElement("div");
-        card.className = `border-2 p-3 rounded-xl cursor-pointer transition relative overflow-hidden ${cardBorderClass}`;
-        card.addEventListener("click", () => { activeViewIndex = idx; renderAll(); });
-        let badgeHTML = "";
-        if(p.rank === 1) badgeHTML = `<span class="absolute top-2 right-2 text-yellow-400 text-sm"><i class="fa-solid fa-crown animate-bounce"></i></span>`;
-        else if(isMe) badgeHTML = `<span class="absolute top-2 right-2 text-[9px] bg-indigo-600 text-white px-1 py-0.5 rounded font-bold">YOU</span>`;
-        card.innerHTML = `${badgeHTML}<div class="flex items-center gap-2 mb-1.5"><span class="text-sm font-black ${isMe?'text-indigo-400':'text-slate-300'}">${p.name}</span><span class="text-[10px] bg-slate-950/80 text-slate-400 px-1.5 py-0.5 rounded orbitron">Rank #${p.rank || idx+1}</span></div><div class="grid grid-cols-2 gap-x-2 gap-y-1 text-xs mb-1.5"><div class="flex items-center gap-1"><i class="fa-solid fa-coins text-amber-400 w-3 text-center"></i><span class="orbitron font-bold text-slate-200">${p.mon}</span></div><div class="flex items-center gap-1"><i class="fa-solid fa-people-group text-sky-400 w-3 text-center"></i><span class="orbitron text-slate-400">${p.pop}</span></div><div class="flex items-center gap-1"><i class="fa-solid fa-leaf text-emerald-400 w-3 text-center"></i><span class="orbitron ${p.env<=30?'text-rose-400 font-bold':'text-slate-300'}">${p.env}</span></div><div class="flex items-center gap-1"><i class="fa-solid fa-heart text-pink-400 w-3 text-center"></i><span class="orbitron ${p.soc<=30?'text-rose-400 font-bold':'text-slate-300'}">${p.soc}</span></div></div><div class="border-t border-slate-800/80 pt-1.5 flex justify-between items-center text-[10px] text-slate-400"><span>${STAGES[p.stage].name}</span><span class="orbitron text-indigo-400 font-bold">${p.totalScore}分</span></div>`;
-        container.appendChild(card);
-    });
-    const me = roomData.players.find(p => p.id === uid);
-    const targetPlayer = roomData.players[activeViewIndex];
-    const dispatchBtn = document.getElementById("dispatch-tourist-btn");
-    if(targetPlayer.id === uid) { dispatchBtn.disabled = true; dispatchBtn.innerHTML = `<i class="fa-solid fa-lock mr-1"></i> 無法向本國派客`; }
-    else if(me.pop < (100 * getM())) { dispatchBtn.disabled = true; dispatchBtn.innerHTML = `<i class="fa-solid fa-users-slash mr-1"></i> 人口不足 (需 ${100 * getM()})`; }
-    else { dispatchBtn.disabled = false; dispatchBtn.innerHTML = `<i class="fa-solid fa-share-nodes mr-1"></i> 派發旅客至 ${targetPlayer.name}`; }
-    document.getElementById("viewing-city-name").textContent = targetPlayer.name;
-}
-function renderPlots() {
-    const grid = document.getElementById("plots-grid");
-    grid.innerHTML = "";
-    const uid = auth.currentUser?.uid || currentUserId;
-    const targetPlayer = roomData.players[activeViewIndex];
-    const limit = getStageLimit(targetPlayer.stage);
-    document.getElementById("unlocked-plots-count").textContent = `${limit}/12`;
-    const cityWarn = targetPlayer.env <= 30 || targetPlayer.soc <= 30;
-    const M = getM();
-    for(let i=0;i<12;i++){
-        const plot = targetPlayer.plots[i];
-        const card = document.createElement("div");
-        if(i >= limit){
-            card.className = "bg-slate-950/40 border border-slate-800/50 rounded-xl h-28 flex flex-col items-center justify-center text-slate-600 gap-1";
-            card.innerHTML = `<i class="fa-solid fa-lock text-xl text-slate-700"></i><span class="text-[10px] tracking-widest uppercase">區域鎖定</span>`;
-            grid.appendChild(card); continue;
-        }
-        card.className = "bg-slate-900 border border-slate-800 hover:border-slate-700/80 rounded-xl p-3 h-28 flex flex-col justify-between transition relative overflow-hidden group";
-        if(cityWarn) card.classList.add("ring-1","ring-rose-500/20");
-        if(!plot.buildingId && plot.action===null){
-            card.innerHTML = `<div class="text-[10px] text-slate-500">地塊 #${i+1}</div><div class="text-center py-2"><span class="text-xs text-slate-500 group-hover:text-indigo-400 transition font-bold"><i class="fa-solid fa-plus-circle mr-1"></i> 招商開發</span></div><div></div>`;
-            card.classList.add("cursor-pointer","hover:bg-slate-800/30");
-            card.addEventListener("click", () => openBuildModal(i));
-        } else if(plot.action !== null){
-            const b = BUILDINGS.find(x=>x.id===plot.buildingId);
-            const pct = Math.min(100, Math.floor((plot.progress/plot.targetProgress)*100));
-            const builder = roomData.players.find(p=>p.id===plot.ownerId);
-            let actText = plot.action==="upgrade"?"升級中":plot.action==="evolve"?"改建中":"建造中";
-            card.innerHTML = `<div class="flex justify-between items-center text-[10px]"><span class="text-slate-500">地塊 #${i+1}</span><span class="text-indigo-400 font-bold animate-pulse">${actText}</span></div><div class="space-y-1"><div class="text-xs font-black text-slate-300 truncate">${b?b.shortName:"進行中"}</div><div class="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden"><div class="bg-indigo-500 h-full transition-all duration-300" style="width:${pct}%"></div></div></div><div class="flex justify-between text-[8px] text-slate-500"><span>投資: ${builder?builder.name:"未知"}</span><span>${plot.progress} / ${plot.targetProgress}s</span></div>`;
-        } else {
-            const b = BUILDINGS.find(x=>x.id===plot.buildingId);
-            const owner = roomData.players.find(p=>p.id===plot.ownerId);
-            const isForeignPlot = plot.isMultinational;
-            let monYield = b.monPerTick + (plot.level-1)*b.monGrowth;
-            if(isForeignPlot) monYield = `抽成:${monYield - Math.round(monYield*0.3)} / 地主:${Math.round(monYield*0.3)}`;
-            let actionsHTML = "";
-            if(plot.ownerId === uid){
-                const isLevelMax = plot.level >= 5;
-                const uCost = isLevelMax?0:getUpgradeCost(b.baseCost*M,plot.level);
-                let uBtn = isLevelMax?`<span class="text-[9px] text-emerald-400 font-bold">滿級 Lv.5</span>`:`<button onclick="upgradeOnlineBuilding(${i})" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-1.5 py-0.5 rounded text-[9px] font-bold">升級($${uCost})</button>`;
-                let eBtn = (b.id==="youth_hostel" && plot.level===5)?`<button onclick="evolveOnlineBuilding(${i})" class="bg-purple-900/60 hover:bg-purple-800 text-purple-300 px-1.5 py-0.5 rounded text-[9px] font-bold">改建酒店($${200*M})</button>`:"";
-                actionsHTML = `<div class="flex gap-1 items-center mt-1">${uBtn}${eBtn}</div>`;
-            } else { actionsHTML = `<span class="text-[9px] text-slate-500">${owner?owner.name:"對手"} 的投資</span>`; }
-            card.innerHTML = `<div class="flex justify-between items-center text-[10px]"><span class="text-slate-500">地塊 #${i+1}</span><span class="orbitron font-bold text-slate-400">Lv.${plot.level}</span></div><div class="my-1 flex items-center gap-1.5"><span class="text-sm ${CATEGORY_STYLES[b.category].text}"><i class="fa-solid ${b.icon}"></i></span><span class="text-xs font-bold text-slate-200 truncate flex-1">${b.shortName}</span></div><div class="text-[9px] text-slate-400 space-y-0.5 leading-tight"><div>收益 /5s: <strong class="text-amber-400">${monYield} M</strong></div></div><div class="flex justify-between items-center mt-1 border-t border-slate-800/50 pt-1">${actionsHTML}${isForeignPlot?'<span class="text-[8px] bg-indigo-900/40 text-indigo-400 px-1 rounded">外資</span>':''}</div>`;
-        }
-        grid.appendChild(card);
-    }
-}
-function renderQueue() {
-    const container = document.getElementById("queue-display"); container.innerHTML = "";
-    const uid = auth.currentUser?.uid || currentUserId;
-    let queueItems = [];
-    roomData.players.forEach(p => p.plots.forEach(pl => { if(pl.ownerId===uid && pl.action!==null){ const b=BUILDINGS.find(x=>x.id===pl.buildingId); queueItems.push({ city:p.name, buildingName:b?b.shortName:"建築", type:pl.action==="upgrade"?"升級":pl.action==="evolve"?"改建":"建造", progress:pl.progress, target:pl.targetProgress }); } }));
-    if(queueItems.length===0){ container.innerHTML=`<span class="text-slate-500">（目前無工程進行中）</span>`; return; }
-    queueItems.forEach(item=>{ const el=document.createElement("div"); el.className="bg-indigo-950/40 border border-indigo-800/40 rounded-lg px-2 py-1 text-[10px] flex items-center gap-2"; el.innerHTML=`<span class="text-slate-400">[${item.city}]</span><strong class="text-indigo-300">${item.type} ${item.buildingName}</strong><span class="orbitron text-indigo-400 font-bold">${item.progress}/${item.target}s</span>`; container.appendChild(el); });
-}
-function renderSynergies() {
-    const container = document.getElementById("synergies-list"); container.innerHTML = "";
-    const uid = auth.currentUser?.uid || currentUserId;
-    const me = roomData.players.find(p => p.id === uid);
-    const builtIds = me.plots.filter(pl=>pl.buildingId&&pl.action===null).map(pl=>pl.buildingId);
-    SYNERGIES.forEach(synergy=>{
-        const isActive = synergy.check(builtIds);
-        let missingList=[];
-        if(synergy.id==="syn_eco") missingList=["nature_trail","forest_camp","marine_reserve"].filter(id=>!builtIds.includes(id));
-        else if(synergy.id==="syn_culture") missingList=["local_market","history_museum","heritage_park"].filter(id=>!builtIds.includes(id));
-        else if(synergy.id==="syn_activity") missingList=["marathon","beer_festival"].filter(id=>!builtIds.includes(id));
-        else if(synergy.id==="syn_leisure"){
-            if(!builtIds.includes("youth_hostel")&&!builtIds.includes("star_hotel")) missingList.push("youth_hostel_or_star_hotel");
-            if(!builtIds.includes("water_park")) missingList.push("water_park");
-            if(!builtIds.includes("shopping_mall")) missingList.push("shopping_mall");
-        } else if(synergy.id==="syn_diverse"){
-            const allCats=["cultural","natural","leisure","activities","entertainment"];
-            const myCats=new Set(builtIds.map(id=>BUILDINGS.find(x=>x.id===id)?.category));
-            allCats.forEach(c=>{if(!myCats.has(c)) missingList.push(c);});
-        }
-        const missingStr = missingList.map(id=>{ if(id==="youth_hostel_or_star_hotel") return "民宿/星級酒店"; const b=BUILDINGS.find(x=>x.id===id); return b?b.shortName:id; }).join(", ");
-        const el = document.createElement("div"); el.className=`p-3 rounded-xl border text-xs flex flex-col justify-between transition ${isActive?'bg-amber-950/20 border-amber-500/50':'bg-slate-950/60 border-slate-800'}`;
-        el.innerHTML = `<div class="flex justify-between items-center"><span class="font-bold ${isActive?'text-amber-400':'text-slate-300'}">${synergy.name}</span>${isActive?'<span class="text-[9px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded font-bold border border-amber-500/30">已啟動</span>':'<span class="text-[9px] bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded">未達成</span>'}</div><div class="text-[10px] text-slate-400 mt-1">${synergy.desc}</div><div class="mt-2 text-[10px] flex justify-between items-center text-slate-500 border-t border-slate-800/80 pt-1"><span>獎勵: <strong class="text-emerald-400">${synergy.reward}</strong></span>${!isActive && missingStr?`<span class="text-rose-400/80">缺: ${missingStr}</span>`:''}</div>`;
-        container.appendChild(el);
-    });
-}
-function renderMultinationalPanel() {
-    const container = document.getElementById("multinational-panel"); container.innerHTML = "";
-    const uid = auth.currentUser?.uid || currentUserId;
-    let list = [];
-    roomData.players.forEach(p => p.plots.forEach((pl, plotIdx) => { if(pl.isMultinational && pl.ownerId === uid){ const b=BUILDINGS.find(x=>x.id===pl.buildingId); list.push({ city:p.name, plotIdx:plotIdx, name:b?b.shortName:"外國企業", level:pl.level, state:pl.action?"建造中":"營業中" }); } }));
-    if(list.length===0){ container.innerHTML=`<span class="text-slate-500 block text-center py-2">目前沒有在外國進行投資</span>`; return; }
-    list.forEach(m=>{ const row=document.createElement("div"); row.className="flex justify-between items-center bg-slate-900 px-2 py-1.5 rounded-lg border border-slate-800/80"; row.innerHTML=`<span class="text-indigo-400 font-bold">${m.city} #${m.plotIdx+1}</span><span>${m.name} Lv.${m.level} (${m.state})</span>`; container.appendChild(row); });
-}
-function updateTimerUI() {
-    const td = document.getElementById("timer-display");
-    if(gameTime===undefined) gameTime = roomData?.timeLeft || 0;
-    td.textContent = `${Math.floor(gameTime/60).toString().padStart(2,'0')}:${(gameTime%60).toString().padStart(2,'0')}`;
-    if(gameTime <= 30){ td.classList.add("text-rose-500","animate-pulse"); td.classList.remove("text-slate-100"); if(gameTime%5===0) synth.playBeep(); }
-    else{ td.classList.remove("text-rose-500","animate-pulse"); td.classList.add("text-slate-100"); }
-}
-function getStageLimit(stageName) { return STAGES[stageName]?.limit||3; }
-function getUpgradeCost(baseCost, currentLevel) { return Math.floor(baseCost * Math.pow(1.4, currentLevel)); }
-function getUpgradeTime(baseTime, nextLevel) { return baseTime * nextLevel; }
-function endOnlineGame() {
-    if(localProgressInterval) clearInterval(localProgressInterval); if(localTickInterval) clearInterval(localTickInterval); if(gameTimerInterval) clearInterval(gameTimerInterval);
-    const rc = document.getElementById("results-list-container"); rc.innerHTML="";
-    const uid = auth.currentUser?.uid || currentUserId;
-    [...roomData.players].sort((a,b)=>b.totalScore-a.totalScore).forEach((p,idx)=>{
-        const isMe = p.id === uid;
-        const card = document.createElement("div");
-        card.className = `p-4 rounded-xl border flex flex-col md:flex-row md:items-center justify-between gap-3 text-left ${isMe?'bg-indigo-950/40 border-indigo-500':'bg-slate-950 border-slate-800'}`;
-        card.innerHTML = `<div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full flex items-center justify-center orbitron font-black text-slate-950 ${idx===0?'bg-yellow-400':idx===1?'bg-slate-300':'bg-slate-500'}">${idx+1}</div><div><div class="font-bold text-slate-100 flex items-center gap-2"><span>${p.name}</span>${isMe?'<span class="text-[9px] bg-indigo-600 text-white px-1.5 py-0.5 rounded">你</span>':''}<span class="text-[10px] text-slate-400">(${STAGES[p.stage].name})</span></div><div class="text-[10px] text-slate-400 flex flex-wrap gap-x-3 mt-1"><span>資金: <strong class="text-amber-400">${p.mon}</strong></span><span>資產(0.6): <strong class="text-blue-400">${Math.floor(p.totalSpent*0.6)}</strong></span><span>環境(1.5): <strong class="text-emerald-400">${Math.floor(p.env*1.5)}</strong></span><span>社會(1.5): <strong class="text-pink-400">${Math.floor(p.soc*1.5)}</strong></span></div></div></div><div class="text-right"><div class="text-lg font-black orbitron ${idx===0?'text-yellow-400':'text-slate-100'}">${p.totalScore} 分</div></div>`;
-        rc.appendChild(card);
-    });
-    document.getElementById("results-modal").classList.remove("hidden");
-}
-document.getElementById("restart-game-btn").addEventListener("click", () => { if(unsubscribeRoom) unsubscribeRoom(); location.reload(); });
-document.getElementById("close-modal-btn").addEventListener("click", () => document.getElementById("build-modal").classList.add("hidden"));
-document.getElementById("cancel-build-btn").addEventListener("click", () => document.getElementById("build-modal").classList.add("hidden"));
-document.getElementById("sound-toggle-btn").addEventListener("click", () => { const active = synth.toggle(); const i = document.getElementById("sound-icon"), t = document.getElementById("sound-text"); if(active){ i.className="fa-solid fa-volume-high text-green-400"; t.textContent="音效已開啟"; } else { i.className="fa-solid fa-volume-xmark text-rose-500"; t.textContent="音效已關閉"; } });
-function showNotification(text, theme="indigo") {
-    const toast = document.getElementById("toast"); document.getElementById("toast-text").textContent = text;
-    toast.className = `fixed top-24 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-full shadow-2xl text-white font-bold text-center z-50 pointer-events-none transition-all duration-500 ${theme==="green"?"bg-gradient-to-r from-emerald-500 to-teal-600":theme==="red"?"bg-gradient-to-r from-rose-600 to-red-600":theme==="yellow"?"bg-gradient-to-r from-amber-500 to-orange-500":"bg-gradient-to-r from-purple-600 to-indigo-600"}`;
-    toast.classList.remove("opacity-0","scale-75"); toast.classList.add("opacity-100","scale-100");
-    setTimeout(() => { toast.classList.add("opacity-0","scale-75"); toast.classList.remove("opacity-100","scale-100"); }, 3000);
-}
-function spawnParticles(x,y,color="#fbbf24"){
-    const container = document.getElementById("particle-container");
-    for(let i=0;i<15;i++){
-        const p = document.createElement("div"); p.className = "particle"; p.style.backgroundColor=color; p.style.left=`${x}px`; p.style.top=`${y}px`; p.style.width=`${Math.random()*8+4}px`; p.style.height=p.style.width;
-        const angle = Math.random()*Math.PI*2, speed = Math.random()*80+20;
-        p.style.setProperty("--tx",`${Math.cos(angle)*speed}px`); p.style.setProperty("--ty",`${Math.sin(angle)*speed-50}px`);
-        container.appendChild(p); setTimeout(()=>p.remove(),1000);
-    }
-}
-</script>
+    </script>
 </body>
 </html>
